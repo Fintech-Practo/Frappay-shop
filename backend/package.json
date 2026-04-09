@@ -1,0 +1,46 @@
+{
+  "name": "backend-books-and-copies",
+  "version": "1.0.0",
+  "description": "Backend API for Books and Copies e-commerce",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "type": "commonjs",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "create-admin": "node scripts/create-admin.js",
+    "add-test-book": "node scripts/add-test-book.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.978.0",
+    "@aws-sdk/s3-request-presigner": "^3.978.0",
+    "axios": "^1.6.7",
+    "bcrypt": "^6.0.0",
+    "bwip-js": "^4.8.0",
+    "cloudinary": "^2.9.0",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.2.1",
+    "google-auth-library": "^9.4.1",
+    "helmet": "^8.1.0",
+    "joi": "^18.0.2",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.0.2",
+    "multer-s3": "^3.0.1",
+    "mysql2": "^3.16.0",
+    "node-cron": "^4.2.1",
+    "nodemailer": "^6.9.8",
+    "pdfkit": "^0.17.2",
+    "qrcode": "^1.5.4",
+    "uuid": "^13.0.0",
+    "winston": "^3.19.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.2",
+    "nodemon": "^3.1.11",
+    "prettier": "^3.7.4"
+  }
+}
