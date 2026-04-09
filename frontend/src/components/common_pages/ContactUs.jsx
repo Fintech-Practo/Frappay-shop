@@ -2,6 +2,7 @@ import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
 import { Card, CardContent } from '@/components/ui/card';
 import {Layout } from '@/index.js';
+import { BRAND_EMAIL, BRAND_NAME, BRAND_PHONE } from '@/config/brand';
 
 
 const ContactUs = () => {
@@ -11,14 +12,14 @@ const ContactUs = () => {
     {
       icon: <Mail className="w-6 h-6 text-primary" />,
       title: 'Email Us',
-      value: contact_email || 'support@booksandcopy.com',
+      value: contact_email || BRAND_EMAIL,
       description: 'We usually respond within 24 hours',
-      action: `mailto:${contact_email || 'support@booksandcopy.com'}`
+      action: `mailto:${contact_email || BRAND_EMAIL}`
     },
     {
       icon: <Phone className="w-6 h-6 text-primary" />,
       title: 'Call Us',
-      value: contact_phone || '+91 8062180677',
+      value: contact_phone || BRAND_PHONE,
       description: 'Monday to Saturday, 10am - 6pm',
       action: `tel:${contact_phone || '+918062180677'}`
     },
@@ -38,7 +39,7 @@ const ContactUs = () => {
           <div className="max-w-4xl mx-auto text-center mb-12">
             <h1 className="text-4xl font-bold text-foreground mb-4">Contact Us</h1>
             <p className="text-lg text-muted-foreground">
-              Have questions or need assistance? Our support team is here to help you.
+              Have questions about {BRAND_NAME}? Our support team is here to help you.
             </p>
           </div>
 

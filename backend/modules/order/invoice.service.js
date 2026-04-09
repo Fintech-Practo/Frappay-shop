@@ -16,7 +16,7 @@ const logger = require('../../utils/logger');
 const { fmt, calculateGST, numberToWords, formatDate: fmtDate } = require('../../utils/financial.util');
 
 const DEFAULT_LOGO_URL =
-  'https://amzn-books-practomind.s3.ap-south-2.amazonaws.com/assets/736dc86d-fb28-41a1-b8b9-85d407252b3a.png';
+  'https://frappay-shop-assets.s3.ap-south-2.amazonaws.com/assets/736dc86d-fb28-41a1-b8b9-85d407252b3a.png';
 
 const DEFAULT_GST_RATE = 5; // 5% GST for books (HSN 4901); stationery may differ
 
@@ -315,8 +315,8 @@ console.log("Is Interstate:", isInterstate);
       doc.font('Helvetica').fontSize(8.5).fillColor('#000000');
       doc.text('E-Commerce Platform', LM, platY); platY += 14;
       // doc.text('GSTIN: 21ABCDE1234F1Z5', LM, platY); platY += 14;
-      doc.text('E-mail: support@booksandcopies.com', LM, platY); platY += 14;
-      doc.text('Website: booksandcopies.com', LM, platY); platY += 16;
+      doc.text('E-mail: support@frappay.shop', LM, platY); platY += 14;
+      doc.text('Website: frappay.shop', LM, platY); platY += 16;
 
       // Status Badge
       // doc.rect(LM, platY, 100, 16).fill(PRIMARY_RED);
@@ -402,9 +402,9 @@ console.log("Is Interstate:", isInterstate);
 
       sellerIdxY += 22;
       if (primarySeller) {
-        doc.font('Helvetica-Bold').fontSize(10).fillColor('#000000').text(primarySeller.name || 'Books & Copies Seller', col2X, sellerIdxY);
+        doc.font('Helvetica-Bold').fontSize(10).fillColor('#000000').text(primarySeller.name || 'Frap Pay Shop Seller', col2X, sellerIdxY);
         sellerIdxY += 14;
-        doc.font('Helvetica').fontSize(9).fillColor('#374151').text(primarySeller.email || 'seller@booksandcopies.com', col2X, sellerIdxY);
+        doc.font('Helvetica').fontSize(9).fillColor('#374151').text(primarySeller.email || 'seller@frappay.shop', col2X, sellerIdxY);
         sellerIdxY += 12;
         doc.text(`Phone: ${primarySeller.phone || '09348021930'}`, col2X, sellerIdxY);
         sellerIdxY += 12;
@@ -418,9 +418,9 @@ if (primarySellerInfo && primarySellerInfo.gst_number) {
   doc.text(`GSTIN: ${primarySellerInfo.gst_number}`, col2X, sellerIdxY);
 }
       } else {
-        doc.font('Helvetica-Bold').fontSize(10).fillColor('#000000').text('Books & Copies Platform', col2X, sellerIdxY);
+        doc.font('Helvetica-Bold').fontSize(10).fillColor('#000000').text('Frap Pay Shop Platform', col2X, sellerIdxY);
         sellerIdxY += 14;
-        doc.font('Helvetica').fontSize(9).fillColor('#374151').text('seller@booksandcopies.com', col2X, sellerIdxY);
+        doc.font('Helvetica').fontSize(9).fillColor('#374151').text('seller@frappay.shop', col2X, sellerIdxY);
         sellerIdxY += 12;
         doc.text('Phone: 09348021930', col2X, sellerIdxY);
       }
@@ -546,7 +546,7 @@ if (primarySellerInfo && primarySellerInfo.gst_number) {
         .text('Thank You for Shopping with Us!', 0, bottomY, { align: 'center', width: PW });
 
       doc.font('Helvetica').fontSize(9).fillColor('#f87171')
-        .text(`For any queries contact at support@booksandcopies.com or Call +91 8062180677`, 0, bottomY + 20, { align: 'center', width: PW });
+        .text(`For any queries contact at support@frappay.shop or Call +91 8062180677`, 0, bottomY + 20, { align: 'center', width: PW });
       doc.moveDown(0.2);
       doc.rect(PW / 2 - 30, bottomY + 30, 60, 0.5).fill('#f87171'); // small underline effect if needed
 

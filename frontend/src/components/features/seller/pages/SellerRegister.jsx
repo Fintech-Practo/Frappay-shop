@@ -403,7 +403,7 @@ export default function SellerRegister() {
                 <h1 className="text-2xl sm:text-3xl font-bold">Become a Seller</h1>
               </div>
               <p className="text-muted-foreground">
-                Fill out the form below to start selling on Books & Copies. All information is required for verification.
+                Fill out the form below to start selling on Frap Pay Shop. All information is required for verification.
               </p>
             </div>
 

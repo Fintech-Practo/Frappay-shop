@@ -6,7 +6,7 @@ const path = require('path');
 
 function logToFile(msg) {
     try {
-        const logPath = 'c:\\PRACTOMIND\\25\\Books-and-Copies\\backend\\debug.log';
+        const logPath = 'c:\\FRAP PAY SHOP\\25\\Books-and-Copies\\backend\\debug.log';
         fs.appendFileSync(logPath, `${new Date().toISOString()} - ${msg}\n`);
     } catch (e) { }
 }
@@ -138,3 +138,4 @@ module.exports = {
     uploadSettingImage,
     uploadAsset
 };
+

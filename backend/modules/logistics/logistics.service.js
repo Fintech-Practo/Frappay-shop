@@ -310,7 +310,7 @@ async function getSellerPickupDetails(sellerId, conn = null) {
         );
         return {
             warehouse_id: mockWh?.[0]?.id || null,
-            pickup_location: "PRACTOMINDSOLUTIONSL-do-B2C",
+            pickup_location: "FRAP PAY SHOPSOLUTIONSL-do-B2C",
             pickup_pincode: mockWh?.[0]?.pincode || "751010"
         };
     }

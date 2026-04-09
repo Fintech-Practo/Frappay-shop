@@ -5,7 +5,7 @@ const sections = [
   {
     id: 1,
     title: "General",
-    content: `www.booksandcopies.com is an online portal owned and operated by PractoMind Solutions LLP (referred to as 'Company,' 'We,' 'Our,' or 'Us'), with its registered office at Ostapur, Kumarpur, Cuttack-754028, Odisha, India, and corporate office at Office No-638, Nexus Esplanade, Rasulgarh, Bhubaneswar – 751010, Odisha, India.
+    content: `www.frappay.shop is an online portal owned and operated by Frap Pay Shop (referred to as 'Company,' 'We,' 'Our,' or 'Us'), with its registered office at Ostapur, Kumarpur, Cuttack-754028, Odisha, India, and corporate office at Office No-638, Nexus Esplanade, Rasulgarh, Bhubaneswar – 751010, Odisha, India.
 
 Access to the Website is offered provided you accept all terms, conditions, and notices stated in these Terms (including referenced policies), along with any changes or updates made by the Company at its sole discretion and posted on the Website. These may include extra charges for access or use of certain services.
 
@@ -39,7 +39,7 @@ It is your responsibility to provide accurate information when using the Service
   {
     id: 3,
     title: "Sellers",
-    content: `We permit third-party sellers of school books, other publications, and related products to register on our website and offer their goods and services through us. A seller registration form is available on our site; however, completing this form does not automatically grant the right to become a seller. Our onboarding team will process these requests only after conducting thorough due diligence and verifying all provided details and may request additional information from prospective sellers as required by law. A Seller Agreement outlining the terms of engagement will be signed between the seller and Practomind Solutions LLP and executed in accordance with applicable laws.
+    content: `We permit third-party sellers of school books, other publications, and related products to register on our website and offer their goods and services through us. A seller registration form is available on our site; however, completing this form does not automatically grant the right to become a seller. Our onboarding team will process these requests only after conducting thorough due diligence and verifying all provided details and may request additional information from prospective sellers as required by law. A Seller Agreement outlining the terms of engagement will be signed between the seller and Frap Pay Shop and executed in accordance with applicable laws.
 
 All onboarded sellers are required to comply with these terms and conditions, our privacy policy, and any other policies mandated by law.`,
   },
@@ -159,7 +159,7 @@ Any merchandise or Services purchased from the Website are strictly for your per
     title: "Intellectual Property Rights",
     content: `All content on the Website, including its design and arrangement, is owned and controlled by Company and protected by copyright, patent, trademark, and other intellectual property laws. The trademarks, logos, and service marks ("Marks") belong to Company or their respective third parties; you may not use them without prior consent.
 
-Unless otherwise specified, Company holds all intellectual property rights related to BooksandCopies / www.booksandcopies.com and the Website, including copyrights, patents, designs, trade secrets, goodwill, source code, and more.
+Unless otherwise specified, Company holds all intellectual property rights related to Frap Pay Shop / www.frappay.shop and the Website, including copyrights, patents, designs, trade secrets, goodwill, source code, and more.
 
 Except as explicitly stated, you may not copy, republish, display, translate, transmit, reproduce, or distribute any Content without proper authorization from Company or relevant third-party owners.`,
   },
@@ -219,17 +219,17 @@ Any claims or disputes related to the Website, Terms, transactions, or the Compa
   {
     id: 17,
     title: "Privacy Policy",
-    content: `We consider your privacy a priority. If the Company merges, is acquired, reorganizes, or restructures, your personal information may be shared with or transferred to another business entity, which will also follow our privacy policy. When you give us your information, it may be used by the Company and its affiliates to provide services related to your transactions, whether on www.booksandcopies.com or third-party merchant websites. We have a dedicated Privacy Policy page for you to read about our privacy guidelines. You are advised to go through our Privacy Policy page before using this website.`,
+    content: `We consider your privacy a priority. If the Company merges, is acquired, reorganizes, or restructures, your personal information may be shared with or transferred to another business entity, which will also follow our privacy policy. When you give us your information, it may be used by the Company and its affiliates to provide services related to your transactions, whether on www.frappay.shop or third-party merchant websites. We have a dedicated Privacy Policy page for you to read about our privacy guidelines. You are advised to go through our Privacy Policy page before using this website.`,
   },
   {
     id: 18,
     title: "Communications",
-    content: `You agree to receive communications from the Company by SMS, email, phone, or WhatsApp regarding your order and the Products and services offered on the Website, as well as from PractoMind Solutions LLP's affiliates.`,
+    content: `You agree to receive communications from the Company by SMS, email, phone, or WhatsApp regarding your order and the Products and services offered on the Website, as well as from Frap Pay Shop's affiliates.`,
   },
   {
     id: 19,
     title: "General Provisions",
-    content: `Notice: All company notices will be delivered either via email or through a general notification on the Website. Any notice directed to the Company in accordance with these Terms should be sent to hello@practomind.com.
+    content: `Notice: All company notices will be delivered either via email or through a general notification on the Website. Any notice directed to the Company in accordance with these Terms should be sent to support@frappay.shop.
 
 For any questions or concerns regarding the product, please contact us through our support page.
 
@@ -326,7 +326,7 @@ const TermsOfService = () => {
             className="font-display italic text-primary text-xs uppercase mb-3"
             style={{ letterSpacing: "0.18em" }}
           >
-            BooksandCopies · PractoMind Solutions LLP
+            Frap Pay Shop · Frap Pay Shop
           </p>
           <h1
             className="font-display font-bold text-foreground"
@@ -355,8 +355,8 @@ const TermsOfService = () => {
               className="bg-secondary border border-border rounded font-body text-foreground"
               style={{ padding: "1.4rem 1.75rem", fontSize: "0.875rem", lineHeight: "1.8" }}
             >
-              <strong className="font-semibold">PractoMind Solutions LLP</strong> operates this
-              website. Throughout the site, "we," "us," and "our" refer to PractoMind Solutions LLP.
+              <strong className="font-semibold">Frap Pay Shop</strong> operates this
+              website. Throughout the site, "we," "us," and "our" refer to Frap Pay Shop.
               We provide this website and all information, tools, and services available here to you,
               the user, on the condition that you accept all terms, conditions, policies, and notices
               described on this page.
@@ -411,10 +411,10 @@ const TermsOfService = () => {
           <p className="max-w-[760px] mx-auto mt-8 text-center font-display italic text-muted-foreground text-sm">
             For any queries or concerns, reach us at{" "}
             <a
-              href="mailto:hello@practomind.com"
+              href="mailto:support@frappay.shop"
               className="text-primary underline underline-offset-2"
             >
-              hello@practomind.com
+              support@frappay.shop
             </a>
           </p>
         </section>

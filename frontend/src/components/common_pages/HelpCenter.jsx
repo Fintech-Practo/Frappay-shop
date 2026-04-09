@@ -10,6 +10,7 @@ import { useSiteSettings } from '@/context/SiteSettingsContext';
 import { Mail, Phone, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '@/config/api';
+import { BRAND_EMAIL, BRAND_NAME, BRAND_PHONE } from '@/config/brand';
 
 const HelpCenter = () => {
   const { isAuthenticated, token } = useAuth();
@@ -95,8 +96,8 @@ const HelpCenter = () => {
                       <div>
                         <h3 className="font-semibold text-foreground">Email Us</h3>
                         <p className="text-sm text-muted-foreground mb-1">For general inquiries and order support</p>
-                        <a href={`mailto:${contact_email || 'support@booksandcopy.com'}`} className="text-primary hover:underline font-medium">
-                          {contact_email || 'support@booksandcopy.com'}
+                        <a href={`mailto:${contact_email || BRAND_EMAIL}`} className="text-primary hover:underline font-medium">
+                          {contact_email || BRAND_EMAIL}
                         </a>
                       </div>
                     </div>
@@ -109,7 +110,7 @@ const HelpCenter = () => {
                         <h3 className="font-semibold text-foreground">Call Support</h3>
                         <p className="text-sm text-muted-foreground mb-1">Available Mon-Sat, 10am - 6pm</p>
                         <a href={`tel:${contact_phone || '+918062180677'}`} className="text-primary hover:underline font-medium">
-                          {contact_phone || '+91 8062180677'}
+                          {contact_phone || BRAND_PHONE}
                         </a>
                       </div>
                     </div>
@@ -119,7 +120,7 @@ const HelpCenter = () => {
                 <div className="bg-primary/5 p-8 rounded-3xl border border-primary/10">
                   <h3 className="font-bold mb-2 text-foreground">Need a faster response?</h3>
                   <p className="text-sm text-muted-foreground">
-                    Submit the form on the right, and your request will be directly assigned to our available support agents.
+                    Submit the form on the right, and the {BRAND_NAME} support team will pick it up directly.
                   </p>
                 </div>
               </div>

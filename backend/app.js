@@ -38,7 +38,7 @@ app.use(helmet({
 
 // ALLOW CROSS ORIGIN REQUESTS
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'https://booksandcopies.com'],
+  origin: ['http://localhost:3000', 'http://localhost:5173', 'https://frappay.shop'],
   credentials: true
 }));
 
@@ -140,7 +140,7 @@ app.get("/test-delhivery", async (req, res) => {
       total_amount: 100,
       items: [{ product_title: "Test Book", quantity: 1 }],
       total_weight: 0.5,
-      pickup_location_name: "PRACTOMINDSOLUTIONSL-do-B2C"
+      pickup_location_name: "FRAP PAY SHOPSOLUTIONSL-do-B2C"
     };
 
     const result = await require("./modules/logistics/delhivery.service")

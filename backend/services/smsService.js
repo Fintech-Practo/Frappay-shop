@@ -55,15 +55,15 @@ const sendSMS = async ({ phone, templateId, variables, orderId = null, eventType
     }
   } else if (variables && variables.OTP) {
     // Direct OTP fallback if resolution failed but OTP variable is present
-    finalMessage = `Your OTP for login is ${variables.OTP}. Do not share this with anyone. Valid for 5 minutes. - Books & Copies. PRACTOMIND`;
+    finalMessage = `Your OTP for login is ${variables.OTP}. Do not share this with anyone. Valid for 5 minutes. - Frap Pay Shop. FRAP PAY SHOP`;
   } else if (templateId === process.env.SMS_TEMPLATE_OTP) {
     // absolute fallback for OTP if variables was somehow missing something
-    finalMessage = "Your OTP from Books & Copies is being processed. Please check your account.";
+    finalMessage = "Your OTP from Frap Pay Shop is being processed. Please check your account.";
   }
 
   // Final validation to prevent "message field is required" error
   if (!finalMessage) {
-    finalMessage = "Notification from Books & Copies";
+    finalMessage = "Notification from Frap Pay Shop";
   }
 
   finalMessage = finalMessage.trim();

@@ -9,10 +9,8 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/AuthContext';
 import { API_BASE_URL } from "@/config/api";
 import axios from 'axios';
-import { useTheme } from '@/context/ThemeContext';
 import ThemeToggle from '@/components/ui/ThemeToggle';
-
-import MainLogo from '@/assets/Logo.png';
+import { BRAND_LOGO, BRAND_NAME, BRAND_SHORT_NAME } from '@/config/brand';
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true);
@@ -23,12 +21,10 @@ export default function Login() {
 
   axios.defaults.baseURL = API_BASE_URL;
 
-  // Google OAuth Implementation - LOGIC UNTOUCHED
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
         setLoading(true);
-        console.log("Google Login Success:", tokenResponse);
         const { access_token } = tokenResponse;
 
         const res = await axios.post(`/api/auth/oauth/google`, {
@@ -51,20 +47,19 @@ export default function Login() {
         setLoading(false);
       }
     },
-    onError: (error) => {
-      console.error("Google Login Failed:", error);
+    onError: (oauthError) => {
+      console.error("Google Login Failed:", oauthError);
       setError("Google Login failed");
     }
   });
 
-  // Form states
-  const [authMode, setAuthMode] = useState('email'); // 'email' or 'phone'
-  const [identifier, setIdentifier] = useState(''); // Holds email or phone
+  const [authMode, setAuthMode] = useState('email');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [otp, setOtp] = useState('');
-  const [registrationStep, setRegistrationStep] = useState(1); // 1: Identifier/Name, 2: OTP, 3: Password
+  const [registrationStep, setRegistrationStep] = useState(1);
 
   const { login, signup, loginSuccess, requestOTP } = useAuth();
   const navigate = useNavigate();
@@ -84,7 +79,6 @@ export default function Login() {
     }
 
     setLoading(true);
-
     const result = await requestOTP(identifier, "REGISTRATION");
     if (result.success) {
       setRegistrationStep(2);
@@ -99,7 +93,6 @@ export default function Login() {
     setError('');
     setLoading(true);
 
-    // LOGIN FLOW
     if (isLogin) {
       const result = await login(identifier, password);
 
@@ -115,7 +108,6 @@ export default function Login() {
       return;
     }
 
-    // SIGNUP FLOW (Final Step)
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       setLoading(false);
@@ -145,22 +137,12 @@ export default function Login() {
     setLoading(false);
   };
 
-  // UI Support for the new design
-  const partners = [
-    "https://practomind.com/wp-content/uploads/Logo-ODia.png",
-    "https://practomind.com/wp-content/uploads/RevoHomes-Logo-Concept-PM2-1024x181.png",
-    "https://practomind.com/wp-content/uploads/Practomind-New-Logo.png",
-    "https://practomind.com/wp-content/uploads/Brandivity.png"
-  ];
-
   return (
-    <div className="min-h-screen  flex flex-col lg:flex-row  overflow-hidden font-sans">
-
-      {/* Left side - Branding (Updated Design) */}
-      <div className="lg:w-1/2 bg-secondary p-8 lg:p-16 flex flex-col justify-between relative order-2 lg:order-1 min-h-screen lg:min-h-full">
-        <div className=" hidden lg:block  mb-8">
-          <Link to="/" >
-            <img src={MainLogo} alt="Logo" className="h-20 w-auto" />
+    <div className="min-h-screen flex flex-col overflow-hidden font-sans lg:flex-row">
+      <div className="order-2 flex min-h-screen flex-col justify-between bg-secondary p-8 lg:order-1 lg:min-h-full lg:w-1/2 lg:p-16">
+        <div className="mb-8 hidden lg:block">
+          <Link to="/">
+            <img src={BRAND_LOGO} alt={`${BRAND_NAME} logo`} className="h-20 w-auto" />
           </Link>
         </div>
 
@@ -169,60 +151,65 @@ export default function Login() {
           animate={{ opacity: 1, x: 0 }}
           className="max-w-xl"
         >
-          <h2 className="font-display text-4xl font-extrabold   leading-tight">
-            Your Gateway to <br />
-            <span className="text-primary italic">Knowledge & Learning</span>
+          <h2 className="font-display text-4xl font-extrabold leading-tight">
+            Commerce that feels <br />
+            <span className="text-primary italic">fast, trusted, and modern</span>
           </h2>
-          <p className="text-lg text-muted-foreground mb-12">
-            Join thousands of readers, students, and businesses who trust
-            Books & Copies for their learning needs.
+          <p className="mb-12 text-lg text-muted-foreground">
+            {BRAND_NAME} brings together smooth shopping, secure checkout, and seller-ready workflows in one production-ready storefront.
           </p>
 
           <div className="grid grid-cols-3 gap-8">
             <div>
-              <div className="text-3xl font-bold text-primary">50K+</div>
-              <div className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Books</div>
+              <div className="text-3xl font-bold text-primary">24/7</div>
+              <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Checkout</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-primary">10K+</div>
-              <div className="text-xs text-muted-foreground uppercase font-bold tracking-widest">E-Books</div>
+              <div className="text-3xl font-bold text-primary">100%</div>
+              <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Brand Ready</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-primary">500+</div>
-              <div className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Sellers</div>
+              <div className="text-3xl font-bold text-primary">1 Hub</div>
+              <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Orders</div>
             </div>
           </div>
 
-          <div className="mt-16">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-6">Strategic Partners</h3>
-            <div className="flex flex-nowrap lg:flex-wrap gap-6 items-center">
-              {partners.map((url, index) => (
-                <div key={index} className="h-24 w-24 rounded-full bg-card dark:bg-white border border-border flex items-center justify-center p-3 shadow-sm overflow-hidden">
-                  <img src={url} alt="Partner" className="max-h-full max-w-full object-contain" />
+          <div className="mt-16 rounded-3xl border border-border bg-card/80 p-6 shadow-xl">
+            <h3 className="mb-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
+              Why teams choose {BRAND_SHORT_NAME}
+            </h3>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {[
+                ['Secure payments', 'Designed to build confidence at checkout'],
+                ['Seller operations', 'Manage listings, logistics, and order flow'],
+                ['Cleaner branding', 'A polished experience across light and dark mode'],
+              ].map(([title, body]) => (
+                <div key={title} className="rounded-2xl border border-border bg-background/60 p-4">
+                  <p className="text-sm font-semibold text-foreground">{title}</p>
+                  <p className="mt-2 text-xs leading-5 text-muted-foreground">{body}</p>
                 </div>
               ))}
             </div>
           </div>
         </motion.div>
 
-        <p className="text-xs text-muted-foreground  text-center lg:text-left mt-10">
-          © 2026 Books & Copies. A venture by Practomind Solutions LLP .All rights reserved.
+        <p className="mt-10 text-center text-xs text-muted-foreground lg:text-left">
+          © 2026 {BRAND_NAME}. All rights reserved.
         </p>
       </div>
 
-      {/* Right side - Form (Updated Design wrapping your existing Logic) */}
-      <div className="flex-1 bg-primary flex flex-col items-center justify-center p-6 lg:p-12 pt-24 lg:pt-12 relative order-1 lg:order-2">
-        {/* Dark Mode Toggle for Login Page */}
-        <div className="absolute top-6 right-6 z-20 hidden lg:block">
+      <div className="relative order-1 flex flex-1 flex-col items-center justify-center bg-primary p-6 pt-24 lg:order-2 lg:p-12 lg:pt-12">
+        <div className="absolute right-6 top-6 z-20 hidden lg:block">
           <div className="scale-125 md:scale-110 [&>button]:border-0 [&>button]:bg-transparent">
             <ThemeToggle />
           </div>
         </div>
-        <div className="lg:hidden fixed top-0 left-0 w-full bg-secondary dark:bg-card py-2 flex items-center justify-between z-50 border-b border-border dark:border-border">
-          <Link to="/" className="block ml-3">
+
+        <div className="fixed left-0 top-0 z-50 flex w-full items-center justify-between border-b border-border bg-secondary py-2 dark:bg-card dark:border-border lg:hidden">
+          <Link to="/" className="ml-3 block">
             <img
-              src={MainLogo}
-              alt="Logo"
+              src={BRAND_LOGO}
+              alt={`${BRAND_NAME} logo`}
               className="h-16 w-auto drop-shadow-2xl"
             />
           </Link>
@@ -230,67 +217,64 @@ export default function Login() {
             <ThemeToggle />
           </div>
         </div>
-        {/* Background decorative element */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-background/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+
+        <div className="absolute right-0 top-0 h-64 w-64 -mr-32 -mt-32 rounded-full bg-background/5 blur-3xl" />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md bg-secondary rounded-[2.5rem] p-8 sm:p-10 shadow-2xl relative z-10"
+          className="relative z-10 w-full max-w-md rounded-[2.5rem] bg-secondary p-8 shadow-2xl sm:p-10"
         >
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold     mb-2">
+          <div className="mb-8 text-center">
+            <h1 className="mb-2 text-2xl font-bold">
               {isLogin ? 'Welcome back!' : 'Create an account'}
             </h1>
-            <p className=" text-sm">
-              {isLogin ? 'Sign in to continue to your account' : 'Join Books & Copies today'}
+            <p className="text-sm">
+              {isLogin ? `Sign in to continue to ${BRAND_NAME}` : `Join ${BRAND_NAME} today`}
             </p>
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-destructive/10 dark:bg-white border border-destructive/20 text-destructive text-sm rounded-2xl flex items-center gap-2">
+            <div className="mb-6 flex items-center gap-2 rounded-2xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive dark:bg-white">
               <span className="h-2 w-2 rounded-full bg-destructive" />
               {error}
             </div>
           )}
 
           <form onSubmit={registrationStep === 1 && !isLogin ? handleStartRegistration : handleSubmit} className="space-y-4">
-
-            {/* Step 1: Name (Logic Untouched) */}
             {!isLogin && registrationStep === 1 && (
               <div className="space-y-1.5">
-                <Label htmlFor="name" className="  font-semibold ml-1">Full Name</Label>
+                <Label htmlFor="name" className="ml-1 font-semibold">Full Name</Label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="name"
                     type="text"
                     placeholder="John Doe"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="pl-11 h-12   border-border rounded-xl focus:ring-primary"
+                    className="h-12 rounded-xl border-border pl-11 focus:ring-primary"
                     required
                   />
                 </div>
               </div>
             )}
 
-            {/* Identifier (Logic Refactored for Email/Phone) */}
             {(isLogin || (!isLogin && registrationStep === 1)) && (
               <div className="space-y-4">
                 {registrationStep === 1 && (
-                  <div className="flex p-1 bg-muted/50 rounded-xl gap-1">
+                  <div className="flex gap-1 rounded-xl bg-muted/50 p-1">
                     <button
                       type="button"
                       onClick={() => { setAuthMode('email'); setIdentifier(''); setError(''); }}
-                      className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${authMode === 'email' ? 'bg-background shadow-sm' : 'text-muted-foreground'}`}
+                      className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all ${authMode === 'email' ? 'bg-background shadow-sm' : 'text-muted-foreground'}`}
                     >
                       Email
                     </button>
                     <button
                       type="button"
                       onClick={() => { setAuthMode('phone'); setIdentifier(''); setError(''); }}
-                      className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${authMode === 'phone' ? 'bg-background shadow-sm' : 'text-muted-foreground'}`}
+                      className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all ${authMode === 'phone' ? 'bg-background shadow-sm' : 'text-muted-foreground'}`}
                     >
                       Phone
                     </button>
@@ -298,12 +282,12 @@ export default function Login() {
                 )}
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="identifier" className="font-semibold ml-1">
+                  <Label htmlFor="identifier" className="ml-1 font-semibold">
                     {authMode === 'email' ? 'Email Address' : 'Phone Number'}
                   </Label>
                   <div className="relative">
                     {authMode === 'email' ? (
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     ) : (
                       <div className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">+91</div>
                     )}
@@ -320,7 +304,7 @@ export default function Login() {
                           setIdentifier(val);
                         }
                       }}
-                      className={`${authMode === 'email' ? 'pl-11' : 'pl-12'} h-12 border-border rounded-xl focus:ring-primary`}
+                      className={`${authMode === 'email' ? 'pl-11' : 'pl-12'} h-12 rounded-xl border-border focus:ring-primary`}
                       required
                       disabled={!isLogin && registrationStep > 1}
                     />
@@ -329,21 +313,20 @@ export default function Login() {
               </div>
             )}
 
-            {/* Login Password (Logic Untouched) */}
             {isLogin && (
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between ml-1">
-                  <Label htmlFor="password" title="password" className="  font-semibold">Password</Label>
+                <div className="ml-1 flex items-center justify-between">
+                  <Label htmlFor="password" title="password" className="font-semibold">Password</Label>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-11 pr-11 h-12  border-border rounded-xl focus:ring-primary"
+                    className="h-12 rounded-xl border-border pl-11 pr-11 focus:ring-primary"
                     required
                   />
                   <button
@@ -357,12 +340,11 @@ export default function Login() {
               </div>
             )}
 
-            {/* Step 2: OTP (Logic Untouched) */}
             {!isLogin && registrationStep === 2 && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between px-1">
-                  <Label htmlFor="otp" className="font-semibold  ">Verification Code</Label>
-                  <button type="button" onClick={handleStartRegistration} className="text-xs text-primary font-bold hover:underline">
+                  <Label htmlFor="otp" className="font-semibold">Verification Code</Label>
+                  <button type="button" onClick={handleStartRegistration} className="text-xs font-bold text-primary hover:underline">
                     Resend OTP
                   </button>
                 </div>
@@ -375,40 +357,39 @@ export default function Login() {
                     setOtp(e.target.value);
                     if (e.target.value.length === 6) setRegistrationStep(3);
                   }}
-                  className="text-center text-2xl h-14 tracking-[0.5em] font-bold  border-border rounded-xl"
+                  className="h-14 rounded-xl border-border text-center text-2xl font-bold tracking-[0.5em]"
                   maxLength={6}
                   required
                 />
-                <p className="text-xs text-muted-foreground text-center italic">
+                <p className="text-center text-xs italic text-muted-foreground">
                   We've sent a code {authMode === 'email' ? 'to' : 'via SMS to'} {identifier}
                 </p>
               </div>
             )}
 
-            {/* Step 3: Password Configuration (Logic Untouched) */}
             {!isLogin && registrationStep === 3 && (
               <div className="space-y-4">
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4  " />
+                  <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2" />
                   <Input
                     id="reg-password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Set Password (Min 8 characters)"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-11 h-12  border-border rounded-xl"
+                    className="h-12 rounded-xl border-border pl-11"
                     required
                   />
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 " />
+                  <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2" />
                   <Input
                     id="confirmPassword"
                     type="password"
                     placeholder="Confirm Password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="pl-11 h-12  border-border rounded-xl"
+                    className="h-12 rounded-xl border-border pl-11"
                     required
                   />
                 </div>
@@ -417,7 +398,7 @@ export default function Login() {
 
             {isLogin && (
               <div className="flex justify-end pr-1">
-                <Link to="/forgot-password" title="Forgot Password" className="text-xs text-primary font-bold hover:underline">
+                <Link to="/forgot-password" title="Forgot Password" className="text-xs font-bold text-primary hover:underline">
                   Forgot password?
                 </Link>
               </div>
@@ -426,7 +407,7 @@ export default function Login() {
             <Button
               type="submit"
               size="lg"
-              className="w-full h-12 bg-primary hover:bg-primary/90  rounded-xl font-bold shadow-lg shadow-primary/20 transition-all"
+              className="h-12 w-full rounded-xl bg-primary font-bold shadow-lg shadow-primary/20 transition-all hover:bg-primary/90"
               disabled={loading}
             >
               {loading
@@ -444,7 +425,7 @@ export default function Login() {
           <div className="mt-8 space-y-4">
             <div className="relative">
               <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
-              <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
+              <div className="relative flex justify-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                 <span className="bg-secondary px-4">Or continue with</span>
               </div>
             </div>
@@ -452,7 +433,7 @@ export default function Login() {
             <Button
               type="button"
               variant="outline"
-              className="w-full h-12 rounded-xl border-border hover:  font-semibold  "
+              className="h-12 w-full rounded-xl border-border font-semibold"
               onClick={handleGoogleLogin}
               disabled={loading}
             >
@@ -465,7 +446,7 @@ export default function Login() {
               Google Account
             </Button>
 
-            <p className="text-center text-sm  ">
+            <p className="text-center text-sm">
               {isLogin ? "Don't have an account?" : 'Already have an account?'}
               <button
                 type="button"
@@ -474,14 +455,13 @@ export default function Login() {
                   setRegistrationStep(1);
                   setError('');
                 }}
-                className="ml-1 text-primary font-bold hover:underline"
+                className="ml-1 font-bold text-primary hover:underline"
               >
                 {isLogin ? 'Sign up' : 'Sign in'}
               </button>
             </p>
           </div>
         </motion.div>
-
       </div>
     </div>
   );

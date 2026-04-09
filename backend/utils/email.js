@@ -43,7 +43,7 @@ async function sendEmail(to, subject, html, text) {
 
 async function sendOTPEmail(email, otp, purpose = "REGISTRATION") {
   const subjectMap = {
-    REGISTRATION: "Verify Your Email - Books and Copies",
+    REGISTRATION: "Verify Your Email - Frap Pay Shop",
     EMAIL_VERIFICATION: "Email Verification Code",
     PASSWORD_RESET: "Password Reset Code",
   };
@@ -126,4 +126,5 @@ module.exports = {
   sendOTPEmail,
   sendRegistrationWelcomeEmail,
 };
+
 

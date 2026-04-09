@@ -38,7 +38,7 @@ module.exports = {
     secure: process.env.EMAIL_SECURE === "true",
     user: process.env.EMAIL_USER,
     password: process.env.EMAIL_PASSWORD,
-    from: process.env.EMAIL_FROM || "noreply@booksandcopies.com"
+    from: process.env.EMAIL_FROM || "noreply@frappay.shop"
   },
 
   cloudinary: {
@@ -81,3 +81,4 @@ module.exports = {
   LOGISTICS_MODE: process.env.LOGISTICS_MODE || "mock",
   platformFee: Number(process.env.PLATFORM_FEE) || 15
 };
+

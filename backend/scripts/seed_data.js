@@ -323,7 +323,7 @@ async function seedData() {
     /* ================= SELLER WAREHOUSES ================= */
     console.log("\nSeeding seller warehouses (pickup locations)...");
 
-    // Specific warehouse for seller_id = 2 (PRACTOMIND)
+    // Specific warehouse for seller_id = 2 (FRAP PAY SHOP)
     const [sw2Exists] = await conn.execute(
       "SELECT id FROM seller_warehouses WHERE seller_id = 2"
     );
@@ -336,14 +336,14 @@ async function seedData() {
         await conn.execute(
           `INSERT INTO seller_warehouses
             (seller_id, pickup_location_name, pincode, warehouse_created)
-           VALUES (2, 'PRACTOMINDSOLUTIONSL-do-B2C', '110001', TRUE)`,
+           VALUES (2, 'FRAP PAY SHOPSOLUTIONSL-do-B2C', '110001', TRUE)`,
         );
-        console.log("  ➕ Created warehouse 'PRACTOMINDSOLUTIONSL-do-B2C' for seller_id=2");
+        console.log("  ➕ Created warehouse 'FRAP PAY SHOPSOLUTIONSL-do-B2C' for seller_id=2");
       } else {
-        console.log("  ⚠️  Seller with id=2 not found — skipping PRACTOMIND warehouse");
+        console.log("  ⚠️  Seller with id=2 not found — skipping FRAP PAY SHOP warehouse");
       }
     } else {
-      console.log("  ℹ️  Warehouse 'PRACTOMINDSOLUTIONSL-do-B2C' already exists for seller_id=2");
+      console.log("  ℹ️  Warehouse 'FRAP PAY SHOPSOLUTIONSL-do-B2C' already exists for seller_id=2");
     }
 
     // Generic warehouse for every other seller that doesn't have one

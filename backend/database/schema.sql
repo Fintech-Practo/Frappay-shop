@@ -1,5 +1,5 @@
 -- =====================================================
--- Books and Copies - Complete Database Schema
+-- Frap Pay Shop - Complete Database Schema
 -- Clean version with all columns in CREATE TABLE statements
 -- No ALTER statements required
 -- =====================================================

@@ -66,12 +66,12 @@ However, we will assist in resolving issues with the courier partner.`,
       <>
         For any queries regarding delivery, cancellations, refunds, or replacements, reach out to us at{" "}
         <a
-          href="https://booksandcopies.com/help"
+          href="https://frappay.shop/help"
           target="_blank"
           rel="noopener noreferrer"
           className="text-primary underline"
         >
-          https://booksandcopies.com/help
+          https://frappay.shop/help
         </a>
       </>
     ),
@@ -145,7 +145,7 @@ const ShippingPolicy = () => {
             className="font-display italic text-primary text-xs uppercase mb-3"
             style={{ letterSpacing: "0.18em" }}
           >
-            BooksandCopies · PractoMind Solutions LLP
+            Frap Pay Shop · Frap Pay Shop
           </p>
           <h1
             className="font-display font-bold text-foreground"
@@ -174,7 +174,7 @@ const ShippingPolicy = () => {
               className="bg-secondary border border-border rounded font-body text-foreground"
               style={{ padding: "1.4rem 1.75rem", fontSize: "0.875rem", lineHeight: "1.8" }}
             >
-              At <strong className="font-semibold">BooksandCopies</strong> (www.booksandcopies.com),
+              At <strong className="font-semibold">Frap Pay Shop</strong> (www.frappay.shop),
               we aim to deliver books, notebooks, and office supplies efficiently and securely across India.
               <br /><br />
               <em className="text-muted-foreground">
@@ -207,10 +207,10 @@ const ShippingPolicy = () => {
           <p className="max-w-[760px] mx-auto mt-8 text-center font-display italic text-muted-foreground text-sm">
             For any delivery or shipping queries, reach us at{" "}
             <a
-              href="https://booksandcopies.com/help"
+              href="https://frappay.shop/help"
               className="text-primary underline underline-offset-2"
             >
-              booksandcopies.com/help
+              frappay.shop/help
             </a>
           </p>
         </section>

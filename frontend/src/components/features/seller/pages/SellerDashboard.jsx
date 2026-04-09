@@ -968,7 +968,7 @@ export default function SellerDashboard() {
                 </Card>
                 <div className="mt-4 p-4 border rounded-lg bg-primary/10 border-border flex gap-3 text-xs text-primary">
                   <AlertCircle className="h-4 w-4 shrink-0" />
-                  <p>Settlements are processed weekly. If you have any discrepancy, please contact support@booksandcopies.com with the Payout ID.</p>
+                  <p>Settlements are processed weekly. If you have any discrepancy, please contact support@frappay.shop with the Payout ID.</p>
                 </div>
               </motion.div>
             )} */}

@@ -350,9 +350,9 @@ async function streamEbook(req, res) {
           'res.cloudinary.com',
           'aws.amazon.com',
           's3.amazonaws.com',
-          'booksandcopies.s3.amazonaws.com',
+          'frappay-shop-assets.s3.amazonaws.com',
           'amazonaws.com',
-          'amzn-books-practomind.s3.ap-south-2.amazonaws.com'
+          'frappay-shop-assets.s3.ap-south-2.amazonaws.com'
         ];
 
         const isAllowed = allowedHosts.some(host => ebookUrl.hostname.endsWith(host));

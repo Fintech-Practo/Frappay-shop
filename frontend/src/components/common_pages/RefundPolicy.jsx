@@ -39,7 +39,7 @@ If the order gets delivered, cancellation/refund will not be possible.`,
 • Missing items
 • Damaged products
 
-To request a replacement, contact us through our official channels as mentioned at https://booksandcopies.com/help
+To request a replacement, contact us through our official channels as mentioned at https://frappay.shop/help
 
 Additional details may be required for verification.
 
@@ -54,7 +54,7 @@ Once approved, a new order ID will be generated for the replacement, and you hav
   {
     id: 6,
     title: "Contact Us",
-    content: `For any queries regarding cancellations, refunds, or replacements, reach out to us at https://booksandcopies.com/help`,
+    content: `For any queries regarding cancellations, refunds, or replacements, reach out to us at https://frappay.shop/help`,
   },
 ];
 
@@ -108,32 +108,32 @@ const AccordionItem = ({ section, isOpen, onToggle }) => (
       >
         {
           section.content
-            .split(/(https:\/\/booksandcopies\.com\/help|www\.booksandcopies\.com)/g)
+            .split(/(https:\/\/frappay\.shop\/help|www\.frappay\.shop)/g)
             .map((part, index) => {
-              if (part === "https://booksandcopies.com/help") {
+              if (part === "https://frappay.shop/help") {
                 return (
                   <a
                     key={index}
-                    href="https://booksandcopies.com/help"
+                    href="https://frappay.shop/help"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary underline"
                   >
-                    https://booksandcopies.com/help
+                    https://frappay.shop/help
                   </a>
                 );
               }
 
-              if (part === "www.booksandcopies.com") {
+              if (part === "www.frappay.shop") {
                 return (
                   <a
                     key={index}
-                    href="https://www.booksandcopies.com"
+                    href="https://www.frappay.shop"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary underline"
                   >
-                    www.booksandcopies.com
+                    www.frappay.shop
                   </a>
                 );
               }
@@ -160,7 +160,7 @@ const RefundPolicy = () => {
             className="font-display italic text-primary text-xs uppercase mb-3"
             style={{ letterSpacing: "0.18em" }}
           >
-            BooksandCopies · PractoMind Solutions LLP
+            Frap Pay Shop · Frap Pay Shop
           </p>
           <h1
             className="font-display font-bold text-foreground"
@@ -190,8 +190,8 @@ const RefundPolicy = () => {
               style={{ padding: "1.4rem 1.75rem", fontSize: "0.875rem", lineHeight: "1.8" }}
             >
               This policy outlines how cancellations, refunds, returns, and replacements are handled
-              for orders placed on <strong>BooksandCopies</strong> (www.booksandcopies.com),
-              operated by <strong>PractoMind Solutions LLP</strong>.
+              for orders placed on <strong>Frap Pay Shop</strong> (www.frappay.shop),
+              operated by <strong>Frap Pay Shop</strong>.
               <br /><br />
               <em className="text-muted-foreground">
                 Please read this policy carefully before placing an order. By purchasing on our
@@ -220,10 +220,10 @@ const RefundPolicy = () => {
           <p className="max-w-[760px] mx-auto mt-8 text-center font-display italic text-muted-foreground text-sm">
             For any cancellation or refund queries, reach us at{" "}
             <a
-              href="https://booksandcopies.com/help"
+              href="https://frappay.shop/help"
               className="text-primary underline"
             >
-              booksandcopies.com/help
+              frappay.shop/help
             </a>
           </p>
         </section>

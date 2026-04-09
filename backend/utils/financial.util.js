@@ -1,6 +1,6 @@
 /**
 * financial.util.js
-* Enterprise-grade financial utilities for Books & Copies
+* Enterprise-grade financial utilities for Frap Pay Shop
 * - GST calculation (CGST/SGST/IGST)
 * - Number to Words (Indian English)
 * - Safe number formatter
@@ -149,3 +149,4 @@ function formatDate(date) {
 }
 
 module.exports = { fmt, calculateGST, numberToWords, formatDate };
+

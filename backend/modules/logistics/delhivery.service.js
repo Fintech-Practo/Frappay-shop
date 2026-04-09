@@ -623,7 +623,7 @@ async function createReversePickup(order) {
                         phone: addr.phone,
                         order: `RVP-${order.id}-${Date.now()}`,
                         payment_mode: "Pickup",
-                        return_name: "Books & Copies",
+                        return_name: "Frap Pay Shop",
                         return_address: "Warehouse Address",
                         return_pin: "110001",
                         return_city: "Delhi",
@@ -1019,3 +1019,4 @@ module.exports = {
     createClientWarehouse,
     editClientWarehouse,
 };
+

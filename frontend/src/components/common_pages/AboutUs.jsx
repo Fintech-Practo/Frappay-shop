@@ -1,79 +1,68 @@
 import React from 'react';
-import {Layout } from '@/index.js';
-
+import { Layout } from '@/index.js';
+import { BRAND_NAME, BRAND_TAGLINE } from '@/config/brand';
 
 const AboutUs = () => {
   return (
-    
-      <Layout>
-        <div className="min-h-screen bg-background">
-        {/* Hero Section */}
+    <Layout>
+      <div className="min-h-screen bg-background">
         <section className="bg-background py-10">
-  <div className="container mx-auto px-6 text-center">
-    
-    <div className="inline-block bg-primary text-primary-foreground px-8 py-3 rounded-full mb-3">
-      <h1 className="text-lg font-medium">
-        About Books & Copies
-      </h1>
-    </div>
+          <div className="container mx-auto px-6 text-center">
+            <div className="mb-3 inline-block rounded-full bg-primary px-8 py-3 text-primary-foreground">
+              <h1 className="text-lg font-medium">About {BRAND_NAME}</h1>
+            </div>
 
-    <p className="text-sm text-muted-foreground max-w-xl mx-auto italic">
-      Books & Copy is an online bookstore focused exclusively on books.
-    </p>
+            <p className="mx-auto max-w-xl text-sm italic text-muted-foreground">
+              {BRAND_TAGLINE}
+            </p>
+          </div>
+        </section>
 
-  </div>
-</section>
-
-
-
-        {/* Content Section */}
-        <section className="py-2 px-6">
+        <section className="px-6 py-2">
           <div className="container mx-auto max-w-4xl text-center">
-            <div className="bg-card/80 backdrop-blur-sm p-12 rounded-3xl shadow-2xl border border-border">
-              <p className="text-sm text-foreground leading-relaxed mb-10 max-w-3xl mx-auto">
-                We make it easy for readers to discover, purchase, and receive books through a simple and secure shopping experience. 
-                Our goal is to make books accessible, affordable, and enjoyable for everyone.
+            <div className="rounded-3xl border border-border bg-card/80 p-12 shadow-2xl backdrop-blur-sm">
+              <p className="mx-auto mb-10 max-w-3xl text-sm leading-relaxed text-foreground">
+                {BRAND_NAME} is a modern storefront experience built for smooth discovery, dependable checkout,
+                and seller-friendly operations. We focus on trust, clarity, speed, and a polished buying journey
+                across every screen.
               </p>
-              
-              <div className="grid md:grid-cols-2 gap-8 mt-16">
-                <div className="bg-primary/5 p-8 rounded-xl text-center hover:shadow-md transition-all duration-300">
-                  <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4 text-xl text-primary-foreground">
-                    📖
+
+              <div className="mt-16 grid gap-8 md:grid-cols-2">
+                <div className="rounded-xl bg-primary/5 p-8 text-center transition-all duration-300 hover:shadow-md">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-primary text-xl text-primary-foreground">
+                    F
                   </div>
-                  <h3 className="text-base font-semibold text-foreground mb-2">Discover</h3>
-                  <p className="text-muted-foreground">Find your next favorite book</p>
+                  <h3 className="mb-2 text-base font-semibold text-foreground">Frictionless Shopping</h3>
+                  <p className="text-muted-foreground">Cleaner navigation, search, and checkout moments</p>
                 </div>
-                <div className="bg-primary/5 p-8 rounded-xl text-center hover:shadow-md transition-all duration-300">
-                  <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4 text-xl text-primary-foreground">
-                    🛒
+                <div className="rounded-xl bg-primary/5 p-8 text-center transition-all duration-300 hover:shadow-md">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-primary text-xl text-primary-foreground">
+                    P
                   </div>
-                  <h3 className="text-base font-semibold text-foreground mb-2">Purchase Securely</h3>
-                  <p className="text-muted-foreground">Simple and safe shopping</p>
+                  <h3 className="mb-2 text-base font-semibold text-foreground">Payment Confidence</h3>
+                  <p className="text-muted-foreground">Reliable, brand-forward commerce with secure flows</p>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-16 px-6 bg-background">
-  <div className="container mx-auto text-center max-w-4xl">
-    <h2 className="text-xl font-semibold text-foreground mb-4">
-      Start Reading Today
-    </h2>
+        <section className="bg-background px-6 py-16">
+          <div className="container mx-auto max-w-4xl text-center">
+            <h2 className="mb-4 text-xl font-semibold text-foreground">
+              Start Shopping with Confidence
+            </h2>
 
-    <a
-      href="/products"
-      className="inline-block bg-primary text-primary-foreground px-6 py-3 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
-    >
-      Browse Books
-    </a>
-  </div>
-</section>
-      </div>    
-      </Layout>
-      
-    
+            <a
+              href="/products"
+              className="inline-block rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              Explore the Store
+            </a>
+          </div>
+        </section>
+      </div>
+    </Layout>
   );
 };
 

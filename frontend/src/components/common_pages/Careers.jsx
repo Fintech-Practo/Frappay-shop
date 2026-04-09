@@ -13,7 +13,7 @@ const Careers = () => {
               <h1 className="text-lg font-medium">Careers</h1>
             </div>
             <p className="text-sm text-gray-600 max-w-xl mx-auto italic">
-              Explore career opportunities with Books & Copies.
+              Explore career opportunities with Frap Pay Shop.
             </p>
           </div>
         </section>

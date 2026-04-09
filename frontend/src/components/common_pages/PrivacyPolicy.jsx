@@ -126,7 +126,7 @@ Name:
 Address:
 Email: 
 
-We welcome feedback on this Privacy Policy at hello@practomind.com and will make reasonable efforts to address it.`,
+We welcome feedback on this Privacy Policy at support@frappay.shop and will make reasonable efforts to address it.`,
   },
 ];
 
@@ -199,7 +199,7 @@ const PrivacyPolicy = () => {
             className="font-display italic text-primary text-xs uppercase mb-3"
             style={{ letterSpacing: "0.18em" }}
           >
-            BooksandCopies · PractoMind Solutions LLP
+            Frap Pay Shop · Frap Pay Shop
           </p>
           <h1
             className="font-display font-bold text-foreground"
@@ -229,10 +229,10 @@ const PrivacyPolicy = () => {
               className="bg-secondary border border-border rounded font-body text-foreground"
               style={{ padding: "1.4rem 1.75rem", fontSize: "0.875rem", lineHeight: "1.8" }}
             >
-              <strong className="font-semibold">BooksandCopies</strong>{" "}
-              (<a href="https://booksandcopies.com" target="_blank" rel="noopener noreferrer" className="text-primary underline">https://booksandcopies.com</a>) is an internet and mobile application-based platform
+              <strong className="font-semibold">Frap Pay Shop</strong>{" "}
+              (<a href="https://frappay.shop" target="_blank" rel="noopener noreferrer" className="text-primary underline">https://frappay.shop</a>) is an internet and mobile application-based platform
               ("Website") operated by{" "}
-              <strong className="font-semibold">PractoMind Solutions LLP</strong> ("Company",
+              <strong className="font-semibold">Frap Pay Shop</strong> ("Company",
               "we", "our", or "us"), a company incorporated under the Limited Liability
               Partnership Act, 2008.
               <br /><br />
@@ -295,10 +295,10 @@ const PrivacyPolicy = () => {
           <p className="max-w-[760px] mx-auto mt-8 text-center font-display italic text-muted-foreground text-sm">
             For any privacy-related concerns, reach us at{" "}
             <a
-              href="mailto:hello@practomind.com"
+              href="mailto:support@frappay.shop"
               className="text-primary underline underline-offset-2"
             >
-              hello@practomind.com
+              support@frappay.shop
             </a>
           </p>
         </section>

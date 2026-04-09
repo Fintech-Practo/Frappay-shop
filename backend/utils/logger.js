@@ -7,7 +7,7 @@ const logger = winston.createLogger({
     winston.format.errors({ stack: true }),
     winston.format.json()
   ),
-  defaultMeta: { service: 'books-and-copies-api' },
+  defaultMeta: { service: 'frap-pay-shop-api' },
   transports: [
     // File logging disabled to prevent disk clutter
     // new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),

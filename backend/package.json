@@ -1,7 +1,7 @@
 {
-  "name": "backend-books-and-copies",
+  "name": "backend-frap-pay-shop",
   "version": "1.0.0",
-  "description": "Backend API for Books and Copies e-commerce",
+  "description": "Backend API for Frap Pay Shop e-commerce",
   "engines": {
     "node": ">=20.0.0"
   },

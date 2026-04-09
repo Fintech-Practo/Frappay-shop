@@ -38,22 +38,12 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
-import logo from '@/assets/Logo.png';
+import { BRAND_LOGO, BRAND_NAME } from '@/config/brand';
 import { WishlistIcon } from '@/index.js';
 import ThemeToggle from '../ui/ThemeToggle';
 import { resolvePhotoUrl } from '@/utils/url';
 import NoticeBar from './NoticeBar';
 import api from '@/config/api';
-
-const categories = [
-  { name: 'School Books', href: '/products?category=school-books' },
-  { name: 'Reference Books', href: '/products?category=reference-books' },
-  { name: 'Novels', href: '/products?category=novels' },
-  { name: 'Notebooks', href: '/products?category=notebooks' },
-  { name: 'Stationery', href: '/products?category=stationery' },
-  { name: 'E-Books', href: '/products?category=ebooks' },
-];
-
 
 const roleMenus = {
   USER: [
@@ -199,12 +189,13 @@ export default function Header() {
         <div className="flex items-center justify-between gap-4">
           {/* Logo */}
           <Link to="/" className="flex items-center  shrink-0">
-            {/* <BookOpen className="h-8 w-8 text-primary" /> */}
-            <img
-              src={resolvePhotoUrl(site_logo)}
-              alt="Books & Copies Logo"
-              className="h-12 w-auto max-w-[200px] sm:h-14 sm:max-w-[250px] lg:h-16 lg:max-w-[320px] object-contain"
-            />
+            <div className="rounded-2xl border border-border/60 bg-card/90 px-3 py-2 shadow-[0_12px_40px_-24px_rgba(15,23,42,0.5)] backdrop-blur-sm">
+              <img
+                src={resolvePhotoUrl(site_logo) || BRAND_LOGO}
+                alt={`${BRAND_NAME} logo`}
+                className="h-12 w-auto max-w-[200px] sm:h-14 sm:max-w-[250px] lg:h-16 lg:max-w-[320px] object-contain"
+              />
+            </div>
           </Link>
 
           {/* Search bar */}
@@ -213,7 +204,7 @@ export default function Header() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Search for books, authors, publishers..."
+                placeholder="Search products, brands, sellers..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-10 h-11 w-full input-focus"
