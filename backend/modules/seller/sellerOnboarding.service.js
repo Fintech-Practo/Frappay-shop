@@ -20,8 +20,8 @@ async function submitOnboarding(userId, data) {
   const requiredFields = [
     'business_name', 'business_location', 'city', 'pin', 'phone',
     'bank_account_number', 'bank_ifsc', 'bank_name', 'pan_number', 'aadhaar_number',
-    'warehouse_name', 'warehouse_phone', 'warehouse_address', 'warehouse_city', 'warehouse_pincode', 'warehouse_email',
-    'return_address', 'return_city', 'return_state', 'return_pincode'
+    'warehouse_name', 'warehouse_phone', 'warehouse_address', 'warehouse_city', 'warehouse_pin', 'warehouse_email',
+    'return_address', 'return_city', 'return_state', 'return_pin'
   ];
 
   for (const field of requiredFields) {
@@ -72,13 +72,13 @@ async function submitOnboarding(userId, data) {
           data.warehouse_address,
           data.warehouse_city,
           data.return_state || data.warehouse_city, // fallback state
-          data.warehouse_pincode,
+          data.warehouse_pin,
           data.warehouse_phone,
           data.warehouse_email,
           data.return_address || data.warehouse_address,
           data.return_city || data.warehouse_city,
           data.return_state || data.warehouse_city,
-          data.return_pincode || data.warehouse_pincode,
+          data.return_pin || data.warehouse_pin,
           existingWarehouse[0].id
         ]
       );
@@ -95,13 +95,13 @@ async function submitOnboarding(userId, data) {
           data.warehouse_address,
           data.warehouse_city,
           data.return_state || data.warehouse_city,
-          data.warehouse_pincode,
+          data.warehouse_pin,
           data.warehouse_phone,
           data.warehouse_email,
           data.return_address || data.warehouse_address,
           data.return_city || data.warehouse_city,
           data.return_state || data.warehouse_city,
-          data.return_pincode || data.warehouse_pincode
+          data.return_pin || data.warehouse_pin
         ]
       );
     }

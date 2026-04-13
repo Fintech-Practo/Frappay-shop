@@ -30,17 +30,22 @@ const onboardingSchema = Joi.object({
     'string.pattern.base': 'Aadhaar number must be exactly 12 digits',
     'any.required': 'Aadhaar number is required'
   }),
+  govt_id_type: Joi.string().valid('aadhaar', 'pan').optional().messages({
+    'any.only': 'Government ID type must be either aadhaar or pan'
+  }),
+  govt_id_number: Joi.string().max(20).optional().allow(''),
+  govt_id_url: Joi.string().uri().optional().allow(''),
   is_books_only: Joi.boolean().default(false),
   gst_number: Joi.string().uppercase().pattern(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/)
     .when('is_books_only', { 
       is: false, 
       then: Joi.required(), 
-      otherwise: Joi.optional() 
+      otherwise: Joi.optional().allow(null, '') 
     }).messages({
     'string.pattern.base': 'Invalid GST format (Example: 29ABCDE1234F2Z5)',
     'any.required': 'GST Number is required when you are not selling only books'
   }),
-  requested_commission_rate: Joi.number().min(0).max(100).optional().default(10.00),
+  requested_commission_rate: Joi.number().min(0).max(100).required().default(10.00),
   // Warehouse & Shipping Location
   warehouse_name: Joi.string().min(2).max(255).required().messages({
     'any.required': 'Warehouse name is required'
@@ -100,4 +105,3 @@ module.exports = {
   onboardingSchema,
   approveRejectSchema
 };
-

@@ -10,6 +10,7 @@ async function createOrUpdate(userId, data) {
     pan_number,
     aadhaar_number,
     gst_number,
+    govt_id_type,
     govt_id_number,
     govt_id_url,
     requested_commission_rate,
@@ -195,7 +196,7 @@ async function approve(userId, adminId, commissionRate = null) {
       if (data.warehouse_address) { whUpdates.push('address = ?'); whValues.push(data.warehouse_address); }
       if (data.warehouse_city) { whUpdates.push('city = ?'); whValues.push(data.warehouse_city); }
       if (data.warehouse_state) { whUpdates.push('state = ?'); whValues.push(data.warehouse_state); }
-      if (data.warehouse_pincode) { whUpdates.push('pincode = ?'); whValues.push(data.warehouse_pincode); }
+      if (data.warehouse_pin) { whUpdates.push('pincode = ?'); whValues.push(data.warehouse_pin); }
       if (data.warehouse_phone) { whUpdates.push('phone = ?'); whValues.push(data.warehouse_phone); }
       if (data.warehouse_email) { whUpdates.push('email = ?'); whValues.push(data.warehouse_email); }
       
@@ -203,7 +204,7 @@ async function approve(userId, adminId, commissionRate = null) {
       if (data.return_address) { whUpdates.push('return_address = ?'); whValues.push(data.return_address); }
       if (data.return_city) { whUpdates.push('return_city = ?'); whValues.push(data.return_city); }
       if (data.return_state) { whUpdates.push('return_state = ?'); whValues.push(data.return_state); }
-      if (data.return_pincode) { whUpdates.push('return_pincode = ?'); whValues.push(data.return_pincode); }
+      if (data.return_pin) { whUpdates.push('return_pincode = ?'); whValues.push(data.return_pin); }
 
       if (whUpdates.length > 0) {
         whValues.push(userId);
