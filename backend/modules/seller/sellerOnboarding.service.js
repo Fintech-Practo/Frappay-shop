@@ -157,36 +157,36 @@ async function getOnboardingDetails(userId) {
 }
 
 async function approveOnboarding(userId, adminId, commissionRate = null) {
-    const result = await sellerOnboardingModel.approve(userId, adminId, commissionRate);
+  const result = await sellerOnboardingModel.approve(userId, adminId, commissionRate);
 
-    // Sync warehouse: Get the existing warehouse for this seller
-    try {
-        const [warehouses] = await pool.query(
-            `SELECT * FROM seller_warehouses WHERE seller_id = ? LIMIT 1`,
-            [userId]
-        );
+  // Sync warehouse: Get the existing warehouse for this seller
+  try {
+    const [warehouses] = await pool.query(
+      `SELECT * FROM seller_warehouses WHERE seller_id = ? LIMIT 1`,
+      [userId]
+    );
 
-        if (warehouses.length > 0) {
-            const warehouse = warehouses[0];
-            
-            // Now sync with Delhivery if not already created
-            if (!warehouse.warehouse_created) {
-                await delhiveryService.createClientWarehouse({
-                    ...warehouse,
-                    pickup_location_name: warehouse.warehouse_name || warehouse.pickup_location_name
-                });
+    if (warehouses.length > 0) {
+      const warehouse = warehouses[0];
+      const syncMethod = warehouse.warehouse_created
+        ? delhiveryService.editClientWarehouse
+        : delhiveryService.createClientWarehouse;
 
-                await pool.query(
-                    `UPDATE seller_warehouses SET warehouse_created = TRUE WHERE id = ?`,
-                    [warehouse.id]
-                );
-            }
-        }
-    } catch (err) {
-        console.error(`Failed to sync warehouse with Delhivery for seller ${userId}:`, err);
+      await syncMethod({
+        ...warehouse,
+        pickup_location_name: warehouse.warehouse_name || warehouse.pickup_location_name
+      });
+
+      await pool.query(
+        `UPDATE seller_warehouses SET warehouse_created = TRUE WHERE id = ?`,
+        [warehouse.id]
+      );
     }
+  } catch (err) {
+    console.error(`Failed to sync warehouse with Delhivery for seller ${userId}:`, err);
+  }
 
-    return result;
+  return result;
 }
 
 async function rejectOnboarding(userId, adminId, reason) {

@@ -90,7 +90,7 @@ router.patch(
 router.patch(
   "/:id/cancel",
   auth,
-  allowRole(ROLES.ADMIN, ROLES.SELLER),
+  allowRole(ROLES.ADMIN, ROLES.SELLER, ROLES.USER),
   controller.cancelOrder,
 );
 

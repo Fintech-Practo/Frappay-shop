@@ -18,7 +18,7 @@ import {
   SelectItem,
 } from '@/components/ui/select';
 
-export default function Addresses() {
+export default function Addresses({ insideDashboard = false }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -290,16 +290,18 @@ export default function Addresses() {
     );
   };
 
-  return (
-    <Layout>
+  const content = (
+    
       <div className="container-custom py-8 md:py-16 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div className="flex items-center gap-4">
+               {!insideDashboard && (
               <Button variant="ghost" size="sm" onClick={handleBack}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back
               </Button>
+              )}
               <h1 className="text-3xl font-bold">My Addresses</h1>
             </div>
 
@@ -582,7 +584,8 @@ export default function Addresses() {
           )}
         </div>
       </div>
-    </Layout>
+    
   );
+   return insideDashboard ? content : <Layout>{content}</Layout>;
 }
 

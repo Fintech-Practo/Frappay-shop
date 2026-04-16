@@ -99,46 +99,7 @@ async function getOrderDetails(orderId) {
   // Convert seller breakdown to array
   const sellerBreakdownArray = Object.values(sellerBreakdown);
 
-  // Create timeline
-  const timeline = [];
 
-  // Order creation
-  timeline.push({
-    type: 'order_created',
-    date: order.created_at,
-    description: `Order #${order.id} created`,
-    details: {
-      total_amount: order.total_payable_amount,
-      payment_status: order.payment_status
-    }
-  });
-
-  // Invoice generation (if invoice number exists)
-  if (order.invoice_number) {
-    timeline.push({
-      type: 'invoice_generated',
-      date: order.created_at, // Assuming generated at same time as order
-      description: `Invoice ${order.invoice_number} generated`,
-      details: {
-        invoice_number: order.invoice_number
-      }
-    });
-  }
-
-  // Status changes (would need to check audit logs for full history)
-  if (order.status !== 'PENDING') {
-    timeline.push({
-      type: 'status_change',
-      date: order.updated_at,
-      description: `Order status changed to ${order.status}`,
-      details: {
-        new_status: order.status
-      }
-    });
-  }
-
-  // Sort timeline by date
-  timeline.sort((a, b) => new Date(a.date) - new Date(b.date));
 
   // Parse shipping address if it's JSON
   let shippingAddress = order.shipping_address;
@@ -275,12 +236,33 @@ async function getOrderDetails(orderId) {
       ...s,
       tracking_history: s.tracking_history || []
     })),
-    timeline: order.status_history.map(h => ({
+    timeline: (order.status_history && order.status_history.length > 0)
+  ? order.status_history.map(h => ({
       type: 'status_change',
-      date: h.created_at,
-      description: h.info || `Status changed to ${h.admin_status}`,
-      details: { status: h.admin_status }
-    })),
+      admin_status: h.status || h.admin_status,
+      created_at: h.created_at,
+      description: h.remarks || h.info || `Status changed to ${h.status || h.admin_status}`
+    }))
+  : [
+      {
+        type: 'order_created',
+        admin_status: 'CREATED',
+        created_at: order.created_at,
+        description: `Order #${order.id} placed`
+      },
+      order.payment_status === 'PAID' ? {
+        type: 'payment',
+        admin_status: 'PAID',
+        created_at: order.updated_at,
+        description: 'Payment confirmed'
+      } : null,
+      order.status !== 'PENDING' ? {
+        type: 'status_change',
+        admin_status: order.status,
+        created_at: order.updated_at,
+        description: `Order status: ${order.status}`
+      } : null
+    ].filter(Boolean),
     payment: paymentBlock
   };
 }

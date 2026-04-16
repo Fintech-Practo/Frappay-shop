@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { useCart } from '@/context/CartContext';
 import {Layout} from '@/index.js';
+import { resolvePhotoUrl } from '@/utils/url';
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -305,7 +306,7 @@ export default function Checkout() {
                         // Normalize for display (session items might vary slightly in keys vs cart)
                         const title = item.book_title || item.title || item.book?.title;
                         const imgParams = item.image_url || item.book?.image_url;
-                        const imageUrl = imgParams ? (imgParams.startsWith('http') ? imgParams : `http://localhost:5000/${imgParams.replace(/\\/g, '/')}`) : '/placeholder.svg';
+                        const imageUrl = resolvePhotoUrl(imgParams?.replace(/\\/g, '/')) || '/placeholder.svg';
 
                         return (
                           <div key={item.id || idx} className="flex gap-3 group">

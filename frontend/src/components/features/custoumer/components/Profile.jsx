@@ -407,7 +407,7 @@ export default function Profile() {
               </div>
 
               {/* Address */}
-              <div>
+              {/* <div>
                 <Label htmlFor="address" className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
                   Full Address (with Pincode) *
@@ -424,7 +424,7 @@ export default function Profile() {
                 <p className="text-xs text-muted-foreground mt-1">
                   We automatically detect city and state from your pincode
                 </p>
-              </div>
+              </div> */}
 
               {/* Bank Details Section */}
               <div className="border-t pt-8 mt-8">

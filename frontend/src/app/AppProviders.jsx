@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 
 // ===== UI =====
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -34,10 +34,10 @@ const AppProviders = ({ children }) => {
                       <Toaster />
                       <Sonner />
 
-                      <BrowserRouter>
+                      <HashRouter>
                         <ScrollToTopOnNavigation />
                         {children}
-                      </BrowserRouter>
+                      </HashRouter>
                     </TooltipProvider>
                   </ProductProvider>
                 </ReviewProvider>

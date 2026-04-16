@@ -7,8 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2, MessageSquare, User, Mail, Calendar, CheckCircle, Clock } from 'lucide-react';
 import { adminService } from "@/index";
-import { formatDate } from '@/lib/utils';
-
+import { formatDate, formatTime } from '@/lib/utils'; // ⭐ ADDED
 
 export default function SupportRequestManager() {
     const [requests, setRequests] = useState([]);
@@ -199,8 +198,7 @@ export default function SupportRequestManager() {
                                         </div>
                                         <div className="flex items-center gap-1">
                                             <Clock className="h-4 w-4" />
-                                            {formatDate(selectedRequest.created_at)} {new Date(selectedRequest.created_at).toLocaleTimeString()}
-                                        </div>
+                                            {formatDate(selectedRequest.created_at)} {formatTime(selectedRequest.created_at)}                                         </div>
                                     </div>
                                 </div>
                                 <Badge className={getStatusColor(selectedRequest.status)}>{selectedRequest.status}</Badge>

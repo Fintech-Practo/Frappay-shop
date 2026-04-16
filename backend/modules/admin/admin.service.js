@@ -2,6 +2,7 @@ const userModel = require("../user/user.model");
 const orderModel = require("../order/order.model");
 const auditService = require("../audit/audit.service");
 const notificationService = require("../notification/notification.service");
+const pool = require("../../config/db");
 
 async function getAllUsers(filters = {}) {
   const users = await userModel.listAll(filters);
@@ -45,8 +46,8 @@ async function getLowStockProducts(threshold) {
 }
 
 async function getSalesAnalytics(filters = {}) {
-  const orderModel = require("../order/order.model");
-  return orderModel.getSalesAnalytics(filters);
+  const orderModelForAnalytics = require("../order/order.model");
+  return orderModelForAnalytics.getSalesAnalytics(filters);
 }
 
 async function getUserActivity(filters = {}) {
@@ -54,17 +55,13 @@ async function getUserActivity(filters = {}) {
 }
 
 async function getSystemHealth() {
-  const db = require("../../config/db");
   try {
-    await db.execute('SELECT 1');
+    await pool.query('SELECT 1');
     return { status: 'healthy', database: 'connected' };
   } catch (error) {
     return { status: 'unhealthy', database: 'disconnected', error: error.message };
   }
 }
-
-
-const pool = require("../../config/db");
 
 // --- Global Commission Settings ---
 
@@ -115,15 +112,10 @@ async function actionCommissionRequest(requestId, action, adminRemarks, adminId)
       [requestId]
     );
 
-    if (rows.length === 0) {
-      throw new Error("Request not found");
-    }
-
+    if (rows.length === 0) throw new Error("Request not found");
     const request = rows[0];
 
-    if (request.status !== 'PENDING') {
-      throw new Error("Request is not pending");
-    }
+    if (request.status !== 'PENDING') throw new Error("Request is not pending");
 
     const newStatus = action === 'APPROVE' ? 'APPROVED' : 'REJECTED';
 
@@ -133,7 +125,6 @@ async function actionCommissionRequest(requestId, action, adminRemarks, adminId)
     );
 
     if (newStatus === 'APPROVED') {
-      // Update seller analytics with new commission
       await connection.query(
         "UPDATE seller_analytics SET admin_commission_percentage = ? WHERE seller_id = ?",
         [request.requested_percentage, request.seller_id]
@@ -142,9 +133,7 @@ async function actionCommissionRequest(requestId, action, adminRemarks, adminId)
 
     await connection.commit();
 
-    // --- Post-Commit Actions (Notifications & Audits) ---
-
-    // 1. Notify Seller
+    // Notify & Audit
     try {
       await notificationService.sendNotification(
         request.seller_id,
@@ -154,12 +143,7 @@ async function actionCommissionRequest(requestId, action, adminRemarks, adminId)
         'COMMISSION_REQUEST',
         requestId
       );
-    } catch (notifyErr) {
-      console.error("Seller notification for commission request failed:", notifyErr.message);
-    }
 
-    // 2. Audit Log (Moving from controller for consistency)
-    try {
       await auditService.logAction({
         action: `${action}_COMMISSION_REQUEST`,
         module: 'SELLER',
@@ -168,8 +152,8 @@ async function actionCommissionRequest(requestId, action, adminRemarks, adminId)
         performedBy: adminId,
         newValues: { action, remarks: adminRemarks }
       });
-    } catch (auditErr) {
-      console.error("Audit log for commission request failed:", auditErr.message);
+    } catch (err) {
+      console.error("Post-action logging failed:", err.message);
     }
 
     return { success: true };
@@ -197,6 +181,7 @@ async function getProfileUpdateRequests(status = 'PENDING') {
 
 async function actionProfileUpdateRequest(requestId, action, adminRemarks, adminId) {
   const connection = await pool.getConnection();
+  let warehouseSyncContext = null;
   try {
     await connection.beginTransaction();
 
@@ -205,15 +190,10 @@ async function actionProfileUpdateRequest(requestId, action, adminRemarks, admin
       [requestId]
     );
 
-    if (rows.length === 0) {
-      throw new Error("Request not found");
-    }
-
+    if (rows.length === 0) throw new Error("Request not found");
     const request = rows[0];
 
-    if (request.status !== 'PENDING') {
-      throw new Error("Request is not pending");
-    }
+    if (request.status !== 'PENDING') throw new Error("Request is not pending");
 
     const newStatus = action === 'APPROVE' ? 'APPROVED' : 'REJECTED';
 
@@ -225,7 +205,7 @@ async function actionProfileUpdateRequest(requestId, action, adminRemarks, admin
     if (newStatus === 'APPROVED') {
       const data = typeof request.data_json === 'string' ? JSON.parse(request.data_json) : request.data_json;
 
-      // 1. Update seller_info table (only valid columns)
+      // 1. Update seller_info table
       const sellerInfoFields = [
         'business_name', 'business_location', 'bank_account_number', 'bank_ifsc', 'bank_name',
         'pan_number', 'aadhaar_number', 'pickup_location_name', 'pickup_pincode',
@@ -243,45 +223,29 @@ async function actionProfileUpdateRequest(requestId, action, adminRemarks, admin
       }
 
       if (sellerInfoUpdates.length > 0) {
-        sellerInfoValues.push(request.seller_id);
-
-        // Ensure record exists logic (upsert)
-        const [existing] = await connection.query(
-          "SELECT id FROM seller_info WHERE user_id = ?",
-          [request.seller_id]
-        );
+        const [existing] = await connection.query("SELECT id FROM seller_info WHERE user_id = ?", [request.seller_id]);
 
         if (existing.length === 0) {
-          const insertKeys = ['user_id', ...sellerInfoUpdates.map(u => u.split(' = ')[0]), 'approval_status'];
-          const insertValues = [request.seller_id, ...sellerInfoValues, 'APPROVED'];
-
-          await connection.query(
-            `INSERT INTO seller_info (${insertKeys.join(', ')}) VALUES (${insertKeys.map(() => '?').join(', ')})`,
-            insertValues
-          );
-
+          const columns = ['user_id', ...sellerInfoUpdates.map(u => u.split(' = ')[0]), 'approval_status'];
+          const placeholders = columns.map(() => '?').join(', ');
+          const values = [request.seller_id, ...sellerInfoValues, 'APPROVED'];
+          await connection.query(`INSERT INTO seller_info (${columns.join(', ')}) VALUES (${placeholders})`, values);
         } else {
-          await connection.query(
-            `UPDATE seller_info SET ${sellerInfoUpdates.join(', ')} WHERE user_id = ?`,
-            sellerInfoValues
-          );
+          sellerInfoValues.push(request.seller_id);
+          await connection.query(`UPDATE seller_info SET ${sellerInfoUpdates.join(', ')} WHERE user_id = ?`, sellerInfoValues);
         }
       }
 
-      // 2. Update seller_warehouses table (specific mapping)
+      // 2. Update seller_warehouses
       const warehouseMapping = {
-        'warehouse_name': 'pickup_location_name',
+        'warehouse_name': 'warehouse_name',
         'warehouse_phone': 'phone',
         'warehouse_address': 'address',
         'warehouse_state': 'state',
         'warehouse_city': 'city',
         'warehouse_pin': 'pincode',
         'warehouse_country': 'country',
-        'warehouse_email': 'email',
-        'return_address': 'return_address',
-        'return_city': 'return_city',
-        'return_state': 'return_state',
-        'return_pin': 'return_pincode'
+        'warehouse_email': 'email'
       };
 
       const warehouseUpdates = [];
@@ -294,53 +258,58 @@ async function actionProfileUpdateRequest(requestId, action, adminRemarks, admin
         }
       }
 
-      if (warehouseUpdates.length > 0) {
-        warehouseValues.push(request.seller_id);
+      if (data.warehouse_name !== undefined && data.warehouse_name !== '') {
+        warehouseUpdates.push('pickup_location_name = ?');
+        warehouseValues.push(data.warehouse_name);
+      }
 
-        // Check if warehouse record exists
-        const [existingWarehouse] = await connection.query(
-          "SELECT id FROM seller_warehouses WHERE seller_id = ?",
-          [request.seller_id]
-        );
+      if (warehouseUpdates.length > 0) {
+        const [existingWarehouse] = await connection.query("SELECT id FROM seller_warehouses WHERE seller_id = ?", [request.seller_id]);
 
         if (existingWarehouse.length === 0) {
-          // For new records, ensure pickup_location_name is set
-          const insertFields = ['seller_id', 'pickup_location_name', ...warehouseUpdates.map(u => u.split(' = ')[0])];
-          const insertValues = [request.seller_id, data.warehouse_name || 'Primary Warehouse', ...warehouseValues];
-
-          await connection.query(
-            `INSERT INTO seller_warehouses (${insertFields.join(', ')}) VALUES (${insertFields.map(() => '?').join(', ')})`,
-            insertValues
-          );
+          const columns = ['seller_id', ...warehouseUpdates.map(u => u.split(' = ')[0])];
+          const placeholders = columns.map(() => '?').join(', ');
+          const values = [request.seller_id, ...warehouseValues];
+          await connection.query(`INSERT INTO seller_warehouses (${columns.join(', ')}) VALUES (${placeholders})`, values);
+          warehouseSyncContext = { sellerId: request.seller_id, type: 'create' };
         } else {
-          await connection.query(
-            `UPDATE seller_warehouses SET ${warehouseUpdates.join(', ')} WHERE seller_id = ?`,
-            warehouseValues
-          );
+          warehouseValues.push(request.seller_id);
+          await connection.query(`UPDATE seller_warehouses SET ${warehouseUpdates.join(', ')} WHERE seller_id = ?`, warehouseValues);
+          warehouseSyncContext = { sellerId: request.seller_id, type: 'edit' };
         }
       }
     }
 
     await connection.commit();
+    if (newStatus === 'APPROVED' && warehouseSyncContext) {
+      try {
+        const logisticsService = require("../logistics/logistics.service");
+        const [warehouseRows] = await pool.query(
+          "SELECT * FROM seller_warehouses WHERE seller_id = ? ORDER BY created_at DESC LIMIT 1",
+          [warehouseSyncContext.sellerId]
+        );
 
-    // --- Post-Commit Actions (Notifications & Audits) ---
+        if (warehouseRows.length > 0) {
+          const warehouse = warehouseRows[0];
+          const syncType = warehouse.warehouse_created ? 'edit' : warehouseSyncContext.type;
+          await logisticsService.syncWarehouse(warehouseSyncContext.sellerId, warehouse, syncType);
+        }
+      } catch (syncErr) {
+        console.error("Warehouse sync after profile update approval failed:", syncErr.message);
+      }
+    }
 
-    // 1. Notify Seller
+
     try {
       await notificationService.sendNotification(
         request.seller_id,
         'SYSTEM',
         'Profile Update Request',
-        `Your profile update request has been ${newStatus.toLowerCase()}. ${adminRemarks ? 'Remarks: ' + adminRemarks : ''}`,
+        `Your profile update request has been ${newStatus.toLowerCase()}.`,
         'PROFILE_UPDATE_REQUEST',
         requestId
       );
-    } catch (notifyErr) {
-      console.error("Seller notification for profile update failed:", notifyErr.message);
-    }
 
-    // 2. Audit Log
-    try {
       await auditService.logAction({
         action: `${action}_PROFILE_UPDATE`,
         module: 'SELLER',
@@ -349,11 +318,8 @@ async function actionProfileUpdateRequest(requestId, action, adminRemarks, admin
         performedBy: adminId,
         newValues: { action, remarks: adminRemarks }
       });
-    } catch (auditErr) {
-      console.error("Audit log for profile update failed:", auditErr.message);
-    }
+    } catch (e) { console.error("Logging error", e.message); }
 
-    await connection.commit();
     return { success: true };
   } catch (err) {
     await connection.rollback();
@@ -362,80 +328,32 @@ async function actionProfileUpdateRequest(requestId, action, adminRemarks, admin
     connection.release();
   }
 }
+
 async function createCoupon(data) {
   const {
-    code,
-    description,
-    discount_type,
-    discount_value,
-    min_order_value,
-    max_discount,
-    expiry_date,
-    usage_limit,
-    per_user_limit,
-    start_date,
-    is_welcome
+    code, description, discount_type, discount_value, min_order_value,
+    max_discount, expiry_date, usage_limit, per_user_limit, start_date, is_welcome
   } = data;
 
   await pool.query(
     `INSERT INTO coupons 
     (code, description, discount_type, discount_value, min_order_value, max_discount, expiry_date, usage_limit, per_user_limit, start_date, is_welcome)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      code,
-      description,
-      discount_type,
-      discount_value,
-      min_order_value,
-      max_discount,
-      expiry_date,
-      usage_limit,
-      per_user_limit,
-      start_date,
-      is_welcome
-    ]
+    [code, description, discount_type, discount_value, min_order_value, max_discount, expiry_date, usage_limit, per_user_limit, start_date, is_welcome]
   );
-
   return { success: true };
 }
+
 async function toggleCouponStatus(id) {
-  await pool.query(
-    "UPDATE coupons SET is_active = NOT is_active WHERE id = ?",
-    [id]
-  );
+  await pool.query("UPDATE coupons SET is_active = NOT is_active WHERE id = ?", [id]);
   return { success: true };
 }
-async function getCouponUsageDetails(code) {
-  const [rows] = await pool.query(
-    `
-    SELECT 
-      o.id AS order_id,
-      o.created_at,
-      o.total_amount,
-      o.discount_amount,
-      u.name AS user_name,
-      u.email
-    FROM orders o
-    JOIN users u ON o.user_id = u.id
-    WHERE o.coupon_code = ?
-    ORDER BY o.created_at DESC
-    `,
-    [code]
-  );
 
-  return rows;
-}
 async function getAllCoupons() {
-  const [rows] = await pool.query(
-    "SELECT * FROM coupons ORDER BY created_at DESC"
-  );
+  const [rows] = await pool.query("SELECT * FROM coupons ORDER BY created_at DESC");
   return rows;
 }
-getCouponUsageDetails: async (code) => {
-  const res = await api.get(`/admin/coupon-usage/${code}`);
-  return res.data;
-},
-// 🔍 GET COUPON USAGE DETAILS
+
 async function getCouponUsageDetails(code) {
   const [rows] = await pool.query(
     `SELECT 
@@ -450,13 +368,44 @@ async function getCouponUsageDetails(code) {
      ORDER BY o.created_at DESC`,
     [code]
   );
-
   return rows;
 }
-getCouponUsage: async (code) => {
-  const res = await api.get(`/admin/coupon-usage/${code}`);
-  return res.data;
-},
+
+async function getRefundLedger(page = 1, limit = 10, filters = {}) {
+  const offset = (page - 1) * limit;
+
+  let baseQuery = `FROM refunds r LEFT JOIN users u ON r.user_id = u.id WHERE 1=1`;
+  const values = [];
+
+  if (filters.status && filters.status !== 'all') {
+    baseQuery += " AND r.status = ?";
+    values.push(filters.status.toLowerCase());
+  }
+
+  if (filters.order_id) {
+    baseQuery += " AND r.order_id LIKE ?";
+    values.push(`%${filters.order_id}%`);
+  }
+
+  const dataQuery = `SELECT r.*, u.name AS user_name, u.email AS user_email ${baseQuery} ORDER BY r.created_at DESC LIMIT ? OFFSET ?`;
+  const countQuery = `SELECT COUNT(*) as total ${baseQuery}`;
+
+  const [rows] = await pool.query(dataQuery, [...values, Number(limit), Number(offset)]);
+  const [[{ total }]] = await pool.query(countQuery, values);
+
+  return {
+    success: true,
+    data: {
+      items: rows,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    }
+  };
+}
 
 module.exports = {
   getAllUsers,
@@ -475,7 +424,9 @@ module.exports = {
   actionProfileUpdateRequest,
   getAllOrders,
   getAllCoupons,
-createCoupon,
-toggleCouponStatus,
-getCouponUsageDetails
+  createCoupon,
+  toggleCouponStatus,
+  getCouponUsageDetails,
+  getOrderSMSLogs,
+  getRefundLedger,
 };

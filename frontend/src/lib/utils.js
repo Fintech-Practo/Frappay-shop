@@ -87,4 +87,20 @@ export function formatDate(date) {
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const year = d.getFullYear();
   return `${day}/${month}/${year}`;
+  }
+export function formatTime(date) {
+  if (!date) return 'N/A';
+
+  let d = new Date(date);
+
+  if (isNaN(d.getTime())) return 'N/A';
+
+  // ⭐ FIX: subtract 5 hours 30 mins (reverse wrong conversion)
+  d = new Date(d.getTime() - (5.5 * 60 * 60 * 1000));
+
+  return new Intl.DateTimeFormat('en-IN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  }).format(d);
 }

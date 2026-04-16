@@ -123,30 +123,57 @@ export default function Products() {
   useEffect(() => {
     if (!categoryFromURL) return;
 
-    switch (categoryFromURL) {
-      case "stationery":
-        setFilters((prev) => ({ ...prev, type: "STATIONERY" }));
-        break;
+    const map = {
+      stationery: "STATIONERY",
+      notebooks: "NOTEBOOK",
+      ebooks: "EBOOK",
+      "school-books": "BOOK",
+      "reference-books": "BOOK",
+      novels: "BOOK",
+    };
 
-      case "notebooks":
-        setFilters((prev) => ({ ...prev, type: "NOTEBOOK" }));
-        break;
+    const type = map[categoryFromURL];
 
-      case "ebooks":
-        setFilters((prev) => ({ ...prev, type: "EBOOK" }));
-        break;
-
-      case "school-books":
-      case "reference-books":
-      case "novels":
-        setFilters((prev) => ({ ...prev, type: "BOOK" }));
-        break;
-
-      default:
-        break;
+    if (type) {
+      setFilters((prev) => ({
+        ...prev,
+        type,
+        format: categoryFromURL === "ebooks" ? "EBOOK" : prev.format,
+      }));
     }
   }, [categoryFromURL]);
+  useEffect(() => {
+    if (!search) return;
 
+    const q = search.toLowerCase().trim();
+
+    if (["ebook", "ebooks", "e-book"].includes(q)) {
+      setFilters((prev) => ({
+        ...prev,
+        type: "EBOOK",
+        format: "EBOOK",
+      }));
+    }
+    else if (["book", "books"].includes(q)) {
+      setFilters((prev) => ({
+        ...prev,
+        type: "BOOK",
+        format: "PHYSICAL",
+      }));
+    }
+    else if (["notebook", "notebooks"].includes(q)) {
+      setFilters((prev) => ({
+        ...prev,
+        type: "NOTEBOOK",
+      }));
+    }
+    else if (q === "stationery") {
+      setFilters((prev) => ({
+        ...prev,
+        type: "STATIONERY",
+      }));
+    }
+  }, [search]);
   /* ── fetch products ── */
   useEffect(() => {
     const fetchProducts = async () => {
@@ -155,11 +182,33 @@ export default function Products() {
         const params = {
           page: 1,
           limit: PAGE_SIZE,
-          min_price: filters.price[0],
-          max_price: filters.price[1],
+          min_price: Number(filters.price[0]) || PRICE_MIN,   // 🔥 FIX
+          max_price: Number(filters.price[1]) || PRICE_MAX,   // 🔥 FIX
         };
 
-        if (search) params.search = search;
+        // 🟢 STRICT SEARCH MAPPING (ADD THIS BLOCK)
+        if (search && !categoryFromURL) {
+          const q = search.toLowerCase().trim();
+
+          if (q === "ebook" || q === "ebooks" || q === "e-book") {
+            params.product_type_code = "BOOK";
+            params.format = "EBOOK";
+          }
+          else if (q === "book" || q === "books") {
+            params.product_type_code = "BOOK";
+            params.format = "PHYSICAL";
+          }
+          else if (q === "notebook" || q === "notebooks") {
+            params.product_type_code = "NOTEBOOK";
+          }
+          else if (q === "stationery") {
+            params.product_type_code = "STATIONERY";
+          }
+          else {
+            // fallback: normal search
+            params.search = search;
+          }
+        }
 
         /* product type + format */
         if (filters.type) {
@@ -198,7 +247,17 @@ export default function Products() {
     };
 
     fetchProducts();
-  }, [filters, search, categoryTree]);
+  }, [
+    filters.type,
+    filters.parent,
+    filters.leaf,
+    filters.format,
+    filters.minRating,
+    filters.price[0],   // 🔥 important
+    filters.price[1],   // 🔥 important
+    search,
+    categoryTree
+  ]);
 
   /* ── derived category lists ── */
   const parentCategories = useMemo(() => {
@@ -218,29 +277,61 @@ export default function Products() {
   const displayProducts = useMemo(() => {
     let list = [...products];
 
+    // 🔥 PRICE FILTER (CLIENT SIDE)
+    list = list.filter((p) => {
+      const price = Number(p.selling_price || 0);
+      return price >= filters.price[0] && price <= filters.price[1];
+    });
+
+    // 🔥 RATING FILTER (ROBUST)
     if (filters.minRating > 0) {
-      list = list.filter((p) => parseFloat(p.rating) >= filters.minRating);
+      list = list.filter((p) => {
+        const rating =
+          Number(p.rating) ||
+          Number(p.average_rating) ||
+          Number(p.avg_rating) ||
+          0;
+
+        return rating >= filters.minRating;
+      });
     }
 
+    // 🔥 SORT FIXED
     switch (sort) {
       case "price_asc":
-        list.sort((a, b) => parseFloat(a.selling_price) - parseFloat(b.selling_price));
+        list.sort((a, b) => Number(a.selling_price || 0) - Number(b.selling_price || 0));
         break;
+
       case "price_desc":
-        list.sort((a, b) => parseFloat(b.selling_price) - parseFloat(a.selling_price));
+        list.sort((a, b) => Number(b.selling_price || 0) - Number(a.selling_price || 0));
         break;
+
       case "discount":
-        list.sort((a, b) => parseFloat(b.discount_percent) - parseFloat(a.discount_percent));
+        list.sort((a, b) => Number(b.discount_percent || 0) - Number(a.discount_percent || 0));
         break;
+
       case "rating":
-        list.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
+        list.sort((a, b) => {
+          const ra =
+            Number(a.rating) ||
+            Number(a.average_rating) ||
+            0;
+
+          const rb =
+            Number(b.rating) ||
+            Number(b.average_rating) ||
+            0;
+
+          return rb - ra;
+        });
         break;
+
       default:
         break;
     }
 
     return list;
-  }, [products, sort, filters.minRating]);
+  }, [products, sort, filters]);
 
   /* ── handlers ── */
   const updateFilter = (key, value) => {
@@ -418,11 +509,13 @@ export default function Products() {
             min={PRICE_MIN}
             max={PRICE_MAX}
             step={50}
-            value={filters.price}
-            onValueChange={(v) => updateFilter("price", v)}
+            value={[filters.price[1]]}   // ✅ only max value
+            onValueChange={(v) =>
+              updateFilter("price", [PRICE_MIN, v[0]])  // ✅ min always 0
+            }
           />
           <div className="flex justify-between mt-2 text-xs text-muted-foreground font-medium">
-            <span>₹{filters.price[0]}</span>
+            <span>₹{PRICE_MIN}</span>
             <span>₹{filters.price[1]}</span>
           </div>
         </div>

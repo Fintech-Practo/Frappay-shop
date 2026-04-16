@@ -26,8 +26,7 @@ class WalletRewardService {
 
             const now = new Date();
             const unlockAt = new Date();
-            unlockAt.setDate(now.getDate() + 120);
-
+            unlockAt.setMonth(unlockAt.getMonth() + 3); // 3 months expiry
             for (const item of items) {
                 // 2. Insert into wallet_transactions
                 await connection.query(

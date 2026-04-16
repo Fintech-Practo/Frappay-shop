@@ -43,6 +43,7 @@ export default function ProductDetail() {
   // const [reviewRefreshKey, setReviewRefreshKey] = useState(0);
   const [purchasedEbook, setPurchasedEbook] = useState(null);
   const [checkingOwnership, setCheckingOwnership] = useState(true);
+  const isInvalid = !id;
 
   const isItemInCart = items.some(item =>
     (item.product_id === Number(id) || item.id === Number(id)) &&
@@ -113,15 +114,7 @@ export default function ProductDetail() {
     checkPurchaseStatus();
   }, [id, isAuthenticated]);
 
-  if (loading) {
-    return (
-      <Layout>
-        <div className="py-20 text-center">
-          <div className="animate-spin h-8 w-8 border-4 border-primary rounded-full border-t-transparent mx-auto" />
-        </div>
-      </Layout>
-    );
-  }
+
 
   /* ---------------- UTILS ---------------- */
   const parseValue = (val) => {
@@ -159,6 +152,17 @@ export default function ProductDetail() {
 
     return [String(val).trim()];
   };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="py-20 text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-primary rounded-full border-t-transparent mx-auto" />
+        </div>
+      </Layout>
+    );
+  }
+
 
   if (!product) {
     return (

@@ -103,14 +103,19 @@ async function createSession(userId, items, type = 'buynow', sessionMetadata = {
     }
 
     const checkout_kind = hasDigital ? 'DIGITAL' : 'PHYSICAL';
-    
+
     // 1.5 Minimum Order Value (MOV) Check (₹100) - Physical Only
     if (checkout_kind === 'PHYSICAL' && subtotal < 100) {
         throw new Error("Minimum order value for physical products is ₹100. Please add more items to your cart.");
     }
 
     const env = require("../../config/env");
-    const platform_fee = checkout_kind === 'PHYSICAL' ? (env.platformFee || 0) : 0;
+    let platform_fee = 0;
+
+    // Apply platform fee ONLY if subtotal >= 1500 (and physical order)
+    if (checkout_kind === 'PHYSICAL' && subtotal >= 1500) {
+        platform_fee = env.platformFee || 0;
+    }
 
     // 2. Automated Welcome Coupon for First Order
     let autoCoupon = null;
@@ -298,73 +303,80 @@ async function updateSessionShipping(sessionId, shippingData) {
     }
 
     data.shipping_method = shippingData.courier_name;
-    data.shipping_charge = parseFloat(shippingData.total_charge) || 0;
-    data.shipping_margin = parseFloat(shippingData.margin) || 0;
-    data.shipping_base_rate = parseFloat(shippingData.base_rate) || 0;
-    data.cod_charges = parseFloat(shippingData.cod_charges) || 0;
-    data.estimated_delivery = shippingData.estimated_delivery_days;
-    
-    // 🔥 NEW: Persist structured address data if provided during this step
-    if (shippingData.address_id) {
-        data.address_id = shippingData.address_id;
-        console.log(`🔥 [Checkout] Saving address_id to session ${sessionId}:`, data.address_id);
+    const subtotal = parseFloat(data.subtotal || 0);
+
+    // Free shipping if subtotal >= 1500
+    if (subtotal >= 1500) {
+        data.shipping_charge = 0;
+    } else {
+        data.shipping_charge = parseFloat(shippingData.total_charge) || 0;
     }
-    if (shippingData.city) data.city = shippingData.city;
-    if (shippingData.state) data.state = shippingData.state;
-    if (shippingData.postal_code) data.postal_code = shippingData.postal_code;
+        data.shipping_margin = parseFloat(shippingData.margin) || 0;
+        data.shipping_base_rate = parseFloat(shippingData.base_rate) || 0;
+        data.cod_charges = parseFloat(shippingData.cod_charges) || 0;
+        data.estimated_delivery = shippingData.estimated_delivery_days;
 
-    return await updateCalculatedTotals(sessionId, data, rows[0].user_id);
-}
+        // 🔥 NEW: Persist structured address data if provided during this step
+        if (shippingData.address_id) {
+            data.address_id = shippingData.address_id;
+            console.log(`🔥 [Checkout] Saving address_id to session ${sessionId}:`, data.address_id);
+        }
+        if (shippingData.city) data.city = shippingData.city;
+        if (shippingData.state) data.state = shippingData.state;
+        if (shippingData.postal_code) data.postal_code = shippingData.postal_code;
 
-async function updateSessionAddress(sessionId, shippingAddress) {
-    const [rows] = await pool.query("SELECT session_data, user_id FROM checkout_sessions WHERE id = ?", [sessionId]);
-    if (rows.length === 0) throw new Error("Session not found");
-
-    let data = rows[0].session_data;
-    if (typeof data === 'string') {
-        try { data = JSON.parse(data); } catch (e) { data = {}; }
+        return await updateCalculatedTotals(sessionId, data, rows[0].user_id);
     }
 
-    let finalAddress = shippingAddress;
-    if (typeof finalAddress === 'string' && finalAddress.trim().startsWith('{')) {
-        try { finalAddress = JSON.parse(finalAddress); } catch (e) { /* ignore */ }
+    async function updateSessionAddress(sessionId, shippingAddress) {
+        const [rows] = await pool.query("SELECT session_data, user_id FROM checkout_sessions WHERE id = ?", [sessionId]);
+        if (rows.length === 0) throw new Error("Session not found");
+
+        let data = rows[0].session_data;
+        if (typeof data === 'string') {
+            try { data = JSON.parse(data); } catch (e) { data = {}; }
+        }
+
+        let finalAddress = shippingAddress;
+        if (typeof finalAddress === 'string' && finalAddress.trim().startsWith('{')) {
+            try { finalAddress = JSON.parse(finalAddress); } catch (e) { /* ignore */ }
+        }
+
+        data.shipping_address = finalAddress;
+
+        // 🔥 PERSIST address_id for robust order creation
+        if (typeof finalAddress === 'object' && finalAddress !== null) {
+            data.address_id = finalAddress.id || finalAddress.address_id || data.address_id;
+        }
+
+        await pool.query(
+            "UPDATE checkout_sessions SET session_data = ? WHERE id = ?",
+            [JSON.stringify(data), sessionId]
+        );
+
+        return data;
     }
 
-    data.shipping_address = finalAddress;
-
-    // 🔥 PERSIST address_id for robust order creation
-    if (typeof finalAddress === 'object' && finalAddress !== null) {
-        data.address_id = finalAddress.id || finalAddress.address_id || data.address_id;
+    async function updateSessionStatus(sessionId, status, connection = null) {
+        const dbClient = connection || pool;
+        await dbClient.query(
+            `UPDATE checkout_sessions SET status = ? WHERE id = ?`,
+            [status, sessionId]
+        );
     }
 
-    await pool.query(
-        "UPDATE checkout_sessions SET session_data = ? WHERE id = ?",
-        [JSON.stringify(data), sessionId]
-    );
+    // Alias used by order.service.js
+    async function markSessionCompleted(sessionId, connection = null) {
+        return updateSessionStatus(sessionId, 'COMPLETED', connection);
+    }
 
-    return data;
-}
-
-async function updateSessionStatus(sessionId, status, connection = null) {
-    const dbClient = connection || pool;
-    await dbClient.query(
-        `UPDATE checkout_sessions SET status = ? WHERE id = ?`,
-        [status, sessionId]
-    );
-}
-
-// Alias used by order.service.js
-async function markSessionCompleted(sessionId, connection = null) {
-    return updateSessionStatus(sessionId, 'COMPLETED', connection);
-}
-
-module.exports = {
-    createSession,
-    getSession,
-    applyCoupon,
-    applyCoins,
-    updateSessionShipping,
-    updateSessionAddress,
-    updateSessionStatus,
-    markSessionCompleted
-};
+    module.exports = {
+        createSession,
+        getSession,
+        applyCoupon,
+        applyCoins,
+        updateSessionShipping,
+        updateSessionAddress,
+        updateSessionStatus,
+        markSessionCompleted
+    };

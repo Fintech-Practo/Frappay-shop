@@ -246,7 +246,16 @@ export default function OrderDetail() {
     const isReturning = order?.status.startsWith('RETURN_') || order?.status === 'REFUNDED' || !!order?.return_status;
     const isReturnable = order?.status === 'DELIVERED' && !isDigital && !isReturning;
     const isShipped = ['SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY'].includes(order?.status);
+    const isUserLoggedIn = true; // replace with real auth later
 
+    const canViewInvoice =
+        isUserLoggedIn &&
+        order?.payment_status === "PAID" &&
+        (
+            order?.payment_method === "ONLINE"
+                ? true
+                : order?.delivery_status === "delivered"
+        );
     if (loading) {
         return (
             <Layout>
@@ -329,7 +338,7 @@ export default function OrderDetail() {
                                             </div>
                                             <div className="space-y-4 border-t pt-4">
                                                 <h3 className="font-semibold text-sm">Refund Payout Method</h3>
-                                                
+
                                                 {savedBankDetails && useSavedAccount ? (
                                                     <div className="bg-primary/5 p-4 rounded-xl border border-primary/20 space-y-3">
                                                         <div className="flex justify-between items-start">
@@ -339,9 +348,9 @@ export default function OrderDetail() {
                                                                 <p className="text-xs text-muted-foreground">A/C: {savedBankDetails.account_number} | {savedBankDetails.ifsc_code}</p>
                                                                 <p className="text-xs text-muted-foreground">Holder: {savedBankDetails.account_holder_name}</p>
                                                             </div>
-                                                            <Button 
-                                                                variant="ghost" 
-                                                                size="sm" 
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
                                                                 className="text-primary text-xs h-7 px-2 hover:bg-primary/10"
                                                                 onClick={() => setUseSavedAccount(false)}
                                                             >
@@ -356,9 +365,9 @@ export default function OrderDetail() {
                                                     <div className="space-y-4">
                                                         {savedBankDetails && (
                                                             <div className="flex justify-end">
-                                                                <Button 
-                                                                    variant="link" 
-                                                                    size="sm" 
+                                                                <Button
+                                                                    variant="link"
+                                                                    size="sm"
                                                                     className="text-xs p-0 h-auto"
                                                                     onClick={() => setUseSavedAccount(true)}
                                                                 >
@@ -475,18 +484,27 @@ export default function OrderDetail() {
                                     </DialogContent>
                                 </Dialog>
                             )}
-                            <Button onClick={handleDownloadInvoice} disabled={downloading} variant="default" className="shadow-sm">
-                                {downloading ? (
-                                    <span className="flex items-center gap-2">
-                                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                                        Downloading...
-                                    </span>
-                                ) : (
-                                    <>
-                                        <Download className="mr-2 h-4 w-4" /> Download Invoice
-                                    </>
-                                )}
-                            </Button>
+                            
+                            {canViewInvoice && (
+                                <Button
+                                    onClick={handleDownloadInvoice}
+                                    disabled={downloading}
+                                    variant="default"
+                                    className="shadow-sm"
+                                >
+                                    {downloading ? (
+                                        <span className="flex items-center gap-2">
+                                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                                            Downloading...
+                                        </span>
+                                    ) : (
+                                        <>
+                                            <Download className="mr-2 h-4 w-4" />
+                                            Download Invoice
+                                        </>
+                                    )}
+                                </Button>
+                            )}
                         </div>
                     </div>
 
@@ -664,9 +682,9 @@ export default function OrderDetail() {
                                             <div key={sIdx} className="divide-y divide-border">
                                                 {ship.tracking_url && (
                                                     <div className="p-4 bg-muted/20 flex justify-end">
-                                                        <Button 
-                                                            variant="link" 
-                                                            size="sm" 
+                                                        <Button
+                                                            variant="link"
+                                                            size="sm"
                                                             className="text-primary h-auto p-0 flex items-center gap-1 text-xs"
                                                             onClick={() => {
                                                                 let url = ship.tracking_url;
@@ -682,13 +700,13 @@ export default function OrderDetail() {
                                                         </Button>
                                                     </div>
                                                 )}
-                                                
+
                                                 <div className="p-6">
                                                     {ship.tracking_history && ship.tracking_history.length > 0 ? (
                                                         <div className="relative pl-6 space-y-6">
                                                             {/* Vertical Line */}
                                                             <div className="absolute left-[2.5px] top-1.5 bottom-1.5 w-0.5 bg-primary/10"></div>
-                                                            
+
                                                             {ship.tracking_history.map((t, tIdx) => (
                                                                 <div key={tIdx} className="relative">
                                                                     <div className={cn(

@@ -280,9 +280,9 @@ async function findById(id, connection = null) {
 
     // Fetch Status History (Internal Events)
     const [history] = await db.query(
-      `SELECT * FROM status_history WHERE order_id = ? ORDER BY created_at DESC`,
-      [id]
-    );
+     `SELECT * FROM order_status_logs WHERE order_id = ? ORDER BY created_at DESC`,
+  [id]
+);
     order.status_history = history;
 
     // Fetch Detailed Tracking History for each shipment

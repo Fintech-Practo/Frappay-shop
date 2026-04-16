@@ -6,6 +6,7 @@ import { useWishlist } from '@/context/WishlistContext';
 import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 import { toast } from "sonner";
+import { resolvePhotoUrl } from '@/utils/url';
 
 export default function ProductRecommendations({ currentProductId, title = "More books you may like" }) {
   const [products, setProducts] = useState([]);
@@ -118,9 +119,7 @@ export default function ProductRecommendations({ currentProductId, title = "More
 
   const getDisplayImage = (url) => {
     if (!url || url === '/placeholder.svg') return '/placeholder.svg';
-    if (url.startsWith('http')) return url;
-    const cleanPath = url.startsWith('/') ? url.substring(1) : url;
-    return `http://localhost:5000/${cleanPath.replace(/\\/g, '/')}`;
+    return resolvePhotoUrl(url.replace(/\\/g, '/')) || '/placeholder.svg';
   };
 
   // Skeleton loader

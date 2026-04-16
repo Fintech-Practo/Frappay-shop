@@ -4,6 +4,9 @@ async function createOrUpdate(userId, data) {
   const {
     business_name,
     business_location,
+    city,
+    pin,
+    phone,
     bank_account_number,
     bank_ifsc,
     bank_name,
@@ -28,7 +31,7 @@ async function createOrUpdate(userId, data) {
     await pool.execute(
       `UPDATE seller_info 
        SET business_name = ?, business_location = ?, bank_account_number = ?,
-           bank_ifsc = ?, bank_name = ?, pan_number = ?, aadhaar_number = ?,
+           bank_ifsc = ?, bank_name = ?, city = ?, pin = ?, phone = ?, pan_number = ?, aadhaar_number = ?,
            gst_number = ?, govt_id_type = ?, govt_id_number = ?, govt_id_url = ?,
            requested_commission_rate = ?, is_books_only = ?, approval_status = 'PENDING', updated_at = CURRENT_TIMESTAMP
        WHERE user_id = ?`,
@@ -38,6 +41,9 @@ async function createOrUpdate(userId, data) {
         bank_account_number,
         bank_ifsc,
         bank_name,
+        city || null,
+        pin || null,
+        phone || null,
         pan_number,
         aadhaar_number,
         gst_number || null,
@@ -55,7 +61,7 @@ async function createOrUpdate(userId, data) {
     const [result] = await pool.execute(
       `INSERT INTO seller_info 
        (user_id, business_name, business_location, bank_account_number, 
-        bank_ifsc, bank_name, pan_number, aadhaar_number, 
+        bank_ifsc, bank_name, city, pin, phone, pan_number, aadhaar_number, 
         gst_number, govt_id_type, govt_id_number, govt_id_url,
         requested_commission_rate, is_books_only, approval_status)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING')`,
@@ -66,6 +72,9 @@ async function createOrUpdate(userId, data) {
         bank_account_number,
         bank_ifsc,
         bank_name,
+        city || null,
+        pin || null,
+        phone || null,
         pan_number,
         aadhaar_number,
         gst_number || null,
@@ -204,7 +213,7 @@ async function approve(userId, adminId, commissionRate = null) {
       if (data.return_address) { whUpdates.push('return_address = ?'); whValues.push(data.return_address); }
       if (data.return_city) { whUpdates.push('return_city = ?'); whValues.push(data.return_city); }
       if (data.return_state) { whUpdates.push('return_state = ?'); whValues.push(data.return_state); }
-      if (data.return_pin) { whUpdates.push('return_pincode = ?'); whValues.push(data.return_pin); }
+       if (data.return_pin) { whUpdates.push('return_pincode = ?'); whValues.push(data.return_pin); }
 
       if (whUpdates.length > 0) {
         whValues.push(userId);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
+import { cn, formatTime } from '@/lib/utils';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
 import { motion } from 'framer-motion';
@@ -8,6 +8,8 @@ import orderService from '@/components/features/order/services/order.service';
 import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/products/components/ProductCard';
 import MyEbooks from '@/components/features/custoumer/components/MyEbooks';
+import Addresses from '@/components/common_pages/Addresses';
+import SettingsPage from '@/components/common_pages/Settings';
 import MyRefunds from '@/components/features/custoumer/components/MyRefunds';
 import WalletPage from '@/components/features/custoumer/pages/WalletPage';
 import {
@@ -333,8 +335,8 @@ export default function CustomerDashboard() {
     { id: 'wishlist', label: 'Wishlist', icon: Heart },
     { id: 'wallet', label: 'My Wallet', icon: Wallet },
     { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'addresses', label: 'Addresses', icon: MapPin, route: '/addresses' },
-    { id: 'settings', label: 'Settings', icon: Settings, route: '/settings' },
+    { id: 'addresses', label: 'Addresses', icon: MapPin },
+    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   if (loading) {
@@ -413,12 +415,17 @@ export default function CustomerDashboard() {
                           onClick={() => {
                             if (item.id === 'ebooks') {
                               setActiveTab('ebooks');
+                            } else if (item.id === 'addresses') {   // ✅ ADDED
+                              setActiveTab('addresses');            // ✅ ADDED
+                            } else if (item.id === 'settings') {    // ✅ ADDED
+                              setActiveTab('settings');              // ✅ ADDED
                             } else if (item.route) {
                               navigate(item.route);
                             } else {
                               setActiveTab(item.id);
                             }
                           }}
+
                           className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${activeTab === item.id
                             ? 'bg-primary text-primary-foreground'
                             : 'text-foreground hover:bg-secondary'
@@ -664,14 +671,16 @@ export default function CustomerDashboard() {
                               )}
                             </div>
                             <div className="flex flex-wrap gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleDownloadInvoice(order.id)}
-                              >
-                                <Download className="h-4 w-4 mr-2" />
-                                Invoice
-                              </Button>
+                              {order.payment_status === 'PAID' && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDownloadInvoice(order.id)}
+                                >
+                                  <Download className="h-4 w-4 mr-2" />
+                                  Invoice
+                                </Button>
+                              )}
                               {['PENDING', 'CONFIRMED', 'PAID'].includes(order.status) && order.status !== 'DELIVERED' && (
                                 <Button
                                   variant="outline"
@@ -871,11 +880,7 @@ export default function CustomerDashboard() {
                                     <div className="flex flex-col items-end gap-4 shrink-0">
                                       <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground/60 bg-secondary/30 px-2 py-1 rounded-lg">
                                         <Clock className="h-3 w-3" />
-                                        {new Date(notif.created_at).toLocaleTimeString('en-IN', {
-                                          hour: '2-digit',
-                                          minute: '2-digit',
-                                          hour12: true
-                                        })}
+                                        {formatTime(notif.created_at)}
                                       </span>
                                       {!notif.is_read && (
                                         <Button
@@ -924,7 +929,24 @@ export default function CustomerDashboard() {
                 <MyEbooks insideDashboard />
               </motion.div>
             )}
-
+            {/* Addresses Tab */}
+            {activeTab === 'addresses' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <Addresses insideDashboard />
+              </motion.div>
+            )}
+            {/* Settings Tab */}
+            {activeTab === 'settings' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <SettingsPage insideDashboard />
+              </motion.div>
+            )}
             {/* My Refunds Tab */}
             {activeTab === 'refunds' && (
               <motion.div

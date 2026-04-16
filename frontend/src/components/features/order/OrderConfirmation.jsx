@@ -51,7 +51,16 @@ export default function OrderConfirmation() {
 
     }, [order, navigate]);
 
+const isUserLoggedIn = true; // replace later with real auth
 
+const canViewInvoice =
+    isUserLoggedIn &&
+    order?.payment_status === "PAID" &&
+    (
+        order?.payment_method === "ONLINE"
+            ? true
+            : order?.status === "DELIVERED"
+    );
     const handleDownloadInvoice = async () => {
         if (!order) return;
         try {
@@ -155,9 +164,17 @@ export default function OrderConfirmation() {
                                 </Link>
                             </Button>
 
-                            <Button variant="outline" size="lg" className="h-12 w-full" onClick={handleDownloadInvoice}>
-                                <Download className="mr-2 h-5 w-5" /> Download Invoice
-                            </Button>
+                                 {canViewInvoice && (
+                                    <Button
+                                        variant="outline"
+                                        size="lg"
+                                        className="h-12 w-full"
+                                        onClick={handleDownloadInvoice}
+                                    >
+                                        <Download className="mr-2 h-5 w-5" />
+                                        Download Invoice
+                                    </Button>
+                                )}   
 
                             <Button asChild variant="ghost" size="lg" className="h-12 w-full text-foreground hover:text-foreground">
                                 <Link to="/products">

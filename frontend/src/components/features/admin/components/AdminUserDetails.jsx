@@ -9,7 +9,7 @@ import {
   AlertTriangle, MapPin, Eye
 } from 'lucide-react';
 import { adminService } from "@/index";
-import { formatDate } from '@/lib/utils';
+import { formatDate, formatTime } from '@/lib/utils'; // ⭐ ADDED
 
 
 export default function AdminUserDetails() {
@@ -473,8 +473,10 @@ export default function AdminUserDetails() {
                     <Activity className="h-5 w-5 mt-1 text-primary" />
                     <div>
                       <p className="text-sm text-muted-foreground">{activity.message}</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(activity.date)} {new Date(activity.date).toLocaleTimeString()}</p>
-                    </div>
+                    <p className="text-xs text-muted-foreground">
+  {formatDate(activity.date)} {formatTime(activity.date)} 
+</p>     
+               </div>
                   </div>
                 ))
               )}

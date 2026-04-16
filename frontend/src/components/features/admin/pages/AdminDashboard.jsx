@@ -30,7 +30,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 
-import { cn } from '@/lib/utils';
+import { cn, formatTime } from '@/lib/utils'; // ⭐ ADDED formatTime
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -528,11 +528,7 @@ export default function AdminDashboard() {
                                         <div className="flex flex-col items-end gap-3 text-xs text-muted-foreground shrink-0">
                                           <span className="flex items-center gap-1.5 opacity-60">
                                             <Clock className="h-3 w-3" />
-                                            {new Date(notif.created_at).toLocaleTimeString('en-IN', {
-                                              hour: '2-digit',
-                                              minute: '2-digit',
-                                              hour12: true
-                                            })}
+                                             {formatTime(notif.created_at)} 
                                           </span>
                                           {!notif.is_read && (
                                             <Button 

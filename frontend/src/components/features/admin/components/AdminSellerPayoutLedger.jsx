@@ -110,6 +110,37 @@ export default function AdminSellerPayoutLedger() {
     if (!dueDate) return false;
     return new Date() >= new Date(dueDate);
   };
+  const handleBulkSettleSeller = async () => {
+    const seller = filters.seller_name?.trim();
+
+    if (!seller) {
+      toast.error("Please search a seller first");
+      return;
+    }
+
+    const confirm = window.confirm(
+      `Settle ALL payouts for "${seller}"? This cannot be undone.`
+    );
+
+    if (!confirm) return;
+
+    try {
+      setLoading(true);
+
+      const res = await adminService.bulkSettleSellerPayouts({
+        seller_name: seller
+      });
+
+      if (res.success) {
+        toast.success("All payouts settled for seller");
+        loadLedger();
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Bulk settlement failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -130,7 +161,7 @@ export default function AdminSellerPayoutLedger() {
 
             {/* LEFT SIDE */}
             <div className="flex items-center gap-4">
-               <div className="relative w-56">
+              <div className="relative w-56">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search seller..."
@@ -173,16 +204,29 @@ export default function AdminSellerPayoutLedger() {
             </div>
 
             {/* RIGHT SIDE (NEW DROPDOWN — YOUR CURSOR AREA) */}
-            <div className="w-44">
-              <Select value={sortOrder} onValueChange={(v) => setSortOrder(v)}>
-                <SelectTrigger className="h-9 text-xs w-[150px]">
-                  <SelectValue placeholder="Sort by Due Date" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="desc">Latest Due Date</SelectItem>
-                  <SelectItem value="asc">Oldest Due Date</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex items-center gap-2">
+
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={handleBulkSettleSeller}
+                disabled={!filters.seller_name}
+              >
+                Settle All
+              </Button>
+
+              <div className="w-44">
+                <Select value={sortOrder} onValueChange={(v) => setSortOrder(v)}>
+                  <SelectTrigger className="h-9 text-xs w-[150px]">
+                    <SelectValue placeholder="Sort by Due Date" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="desc">Latest Due Date</SelectItem>
+                    <SelectItem value="asc">Oldest Due Date</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
             </div>
 
           </div>
@@ -277,9 +321,9 @@ export default function AdminSellerPayoutLedger() {
                             </Select>
                           ) : (
                             <Badge className={`${row.status === 'settled' ? 'bg-success text-success-foreground' :
-                                row.status === 'failed' ? 'bg-danger text-danger-foreground' :
-                                  row.status === 'processing' ? 'bg-info text-info-foreground' :
-                                    'bg-muted text-muted-foreground'
+                              row.status === 'failed' ? 'bg-danger text-danger-foreground' :
+                                row.status === 'processing' ? 'bg-info text-info-foreground' :
+                                  'bg-muted text-muted-foreground'
                               } text-[9px] px-2 py-0.5 uppercase`}>
                               {row.status}
                             </Badge>

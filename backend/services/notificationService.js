@@ -91,6 +91,73 @@ const sendOrderPlacedSMS = async (userId, orderId, amount) => {
   return result;
 };
 
+const sendOrderStatusSMS = async (userId, order, status) => {
+  const normalizedStatus = String(status || "").toUpperCase();
+  const user = await getUserDetails(userId);
+  if (!user?.phone) return { success: false, skipped: true, reason: "missing_phone" };
+
+  const templateMap = {
+    CONFIRMED: {
+      templateId: templates.ORDER_CONFIRMED,
+      eventType: "ORDER_CONFIRMED",
+      variables: {
+        NAME: user.name || "Customer",
+        ORDER_ID: String(order.id),
+        LINK: `${process.env.FRONTEND_URL}/profile/orders/${order.id}`,
+      },
+    },
+    SHIPPED: {
+      templateId: templates.ORDER_SHIPPED,
+      eventType: "ORDER_SHIPPED",
+      variables: {
+        NAME: user.name || "Customer",
+        ORDER_ID: String(order.id),
+        TRACKING_LINK: order.awb_number
+          ? `${process.env.DELHIVERY_TRACKING_URL || 'https://www.delhivery.com/track/package/'}${order.awb_number}`
+          : `${process.env.FRONTEND_URL}/profile/orders/${order.id}`,
+      },
+    },
+    CANCELLED: {
+      templateId: templates.ORDER_CANCELLED,
+      eventType: "ORDER_CANCELLED",
+      variables: {
+        NAME: user.name || "Customer",
+        ORDER_ID: String(order.id),
+      },
+    },
+    OUT_FOR_DELIVERY: {
+      templateId: templates.OUT_FOR_DELIVERY,
+      eventType: "OUT_FOR_DELIVERY",
+      variables: {
+        NAME: user.name || "Customer",
+        ORDER_ID: String(order.id),
+        AMOUNT: String(order.total_payable_amount || "____"),
+      },
+    },
+    DELIVERED: {
+      templateId: templates.DELIVERED,
+      eventType: "DELIVERED",
+      variables: {
+        NAME: user.name || "Customer",
+        ORDER_ID: String(order.id),
+      },
+    },
+  };
+
+  const config = templateMap[normalizedStatus];
+  if (!config?.templateId) {
+    return { success: false, skipped: true, reason: "template_not_configured" };
+  }
+
+  return sendWithRetry({
+    phone: user.phone,
+    templateId: config.templateId,
+    variables: config.variables,
+    orderId: order.id,
+    eventType: config.eventType,
+  });
+};
+
 /**
  * Order Shipped SMS
  */
@@ -375,10 +442,31 @@ const sendPaymentFailedSMS = async (userId, orderId) => {
 
   return result;
 };
+/**
+ * Coin Expiry Warning Notification (NO SMS)
+ */
+const sendCoinExpiryWarning = async (userId, coinAmount, expiryDate) => {
+  try {
+    await notificationService.sendNotification(
+      userId,
+      'COIN_EXPIRY_WARNING',
+      'Coins Expiring Soon',
+      `⚠️ You have ₹${coinAmount} coins expiring on ${expiryDate}. Use them before expiry!`,
+      'WALLET',
+      null
+    );
+  } catch (e) {
+    logger.warn("Failed to send coin expiry notification", {
+      userId,
+      error: e.message,
+    });
+  }
+};
 
 module.exports = {
   sendOtpSMS,
   sendOrderPlacedSMS,
+  sendOrderStatusSMS,
   sendOrderShippedSMS,
   sendOutForDeliverySMS,
   sendDeliveredSMS,
@@ -388,4 +476,5 @@ module.exports = {
   sendRefundInitiatedSMS,
   sendRefundCompletedSMS,
   sendPaymentFailedSMS,
+    sendCoinExpiryWarning,
 };

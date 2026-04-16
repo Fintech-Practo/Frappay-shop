@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { cn, getOrderDisplayStatus, STATUS_CONFIG, formatDate } from '@/lib/utils';
+import { cn, getOrderDisplayStatus, STATUS_CONFIG, formatDate, formatTime } from '@/lib/utils';
 import api from '@/config/api';
 import {
     Truck, Package, MapPin, Calendar, Search, Filter,
@@ -541,8 +541,7 @@ export default function AdminLogistics() {
                                             <p className="text-sm font-bold uppercase">{h.status?.replace(/_/g, ' ')}</p>
                                             <p className="text-xs text-muted-foreground">{h.location || 'N/A'}</p>
                                             <p className="text-[10px] text-muted-foreground mt-1">
-                                                {formatDate(h.activity_date)} {new Date(h.activity_date).toLocaleTimeString()}
-                                            </p>
+                                             {formatDate(h.activity_date)} {formatTime(h.activity_date)}                                             </p>
                                             {h.description && <p className="text-[10px] italic mt-1">{h.description}</p>}
                                         </div>
                                     </div>

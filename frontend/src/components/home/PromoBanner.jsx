@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Tablet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import { resolvePhotoUrl } from '@/utils/url';
 
 export default function PromoBanner() {
   const { promo_banners } = useSiteSettings();
+  const navigate = useNavigate();
   const activeFeatures = promo_banners;
 
   return (
@@ -99,15 +101,14 @@ export default function PromoBanner() {
                   </Button>
                 </Link>
 
-                <Link to="/dashboard">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="bg-secondary text-primary hover:bg-secondary/80 backdrop-blur-sm shadow-lg border-2 border-border"
-                  >
-                    My Library
-                  </Button>
-                </Link>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="bg-secondary text-primary hover:bg-secondary/80 backdrop-blur-sm shadow-lg border-2 border-border"
+                  onClick={() => navigate('/dashboard?tab=ebooks')} // ⭐ BEST WAY
+                >
+                  My Library
+                </Button>
               </div>
             </div>
 

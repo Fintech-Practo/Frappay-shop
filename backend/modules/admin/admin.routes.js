@@ -7,6 +7,26 @@ const auth = require("../../middlewares/auth.middleware");
 const { allowRole } = require("../../middlewares/role.middleware");
 const ROLES = require("../../config/roles");
 
+// REMOVED redundant express and router declarations here to fix SyntaxError
+const adminService = require('./admin.service'); // adjust path
+
+router.get('/refund-ledger', async (req, res) => {
+  try {
+    const { page, limit, status, order_id } = req.query;
+
+    const result = await adminService.getRefundLedger(
+      Number(page) || 1,
+      Number(limit) || 10,
+      { status, order_id }
+    );
+
+    res.json(result);
+  } catch (err) {
+    console.error("Refund Ledger Error:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // ================= USERS =================
 router.get("/users", auth, allowRole(ROLES.ADMIN), adminController.listUsers);
 router.get("/users/:userId/details", auth, allowRole(ROLES.ADMIN), adminController.getUserDetails);
@@ -30,6 +50,12 @@ router.get("/sellers/:sellerId/warehouse-status", auth, allowRole(ROLES.ADMIN), 
 router.get("/sellers/onboarding-requests", auth, allowRole(ROLES.ADMIN), adminController.getSellerOnboardingRequests);
 router.get("/sellers", auth, allowRole(ROLES.ADMIN), adminController.listSellers);
 router.patch("/sellers/:sellerId/commission", auth, allowRole(ROLES.ADMIN), adminController.updateSellerCommission);
+router.post(
+  "/payouts/bulk-settle",
+  auth,
+  allowRole(ROLES.ADMIN),
+  adminController.bulkSettleSellerPayouts
+);
 
 // ================= CARTS =================
 router.get(

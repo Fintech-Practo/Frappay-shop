@@ -45,7 +45,7 @@ class PayoutService {
      * Get all payouts for admin ledger with pagination and filters
      */
     async getPayoutLedger(filters = {}) {
-    const { page = 1, limit = 10, status, seller_id, seller_name = "" } = filters;
+   const { page = 1, limit = 10, status, seller_id, seller_name = "" } = filters;
     const offset = (page - 1) * limit;
     
     let query = `
@@ -121,6 +121,7 @@ class PayoutService {
         }
     };
 }
+
 
     /**
      * Manual update of payout status and transaction ID
@@ -359,6 +360,106 @@ class PayoutService {
             // Backward compatibility
             const [rows] = await db.query(query, params);
             return rows;
+        }
+        }
+
+/**
+ * Bulk settle all payouts for a seller (ADMIN ACTION)
+ */
+async bulkSettleBySeller(seller_name, adminId) {
+        const connection = await db.getConnection();
+
+        try {
+            await connection.beginTransaction();
+
+            // 1. Get seller
+            const [sellerRows] = await connection.query(
+                'SELECT id FROM users WHERE name = ? LIMIT 1',
+                [seller_name]
+            );
+
+            const seller = sellerRows[0];
+
+            if (!seller) {
+                throw new Error("Seller not found");
+            }
+
+            const sellerId = seller.id;
+
+            // 2. Fetch eligible payouts (ONLY SAFE ONES)
+            const [payouts] = await connection.query(
+                `
+                SELECT id, status, due_date
+                FROM payouts
+                WHERE seller_id = ?
+                  AND status IN ('pending', 'processing')
+                FOR UPDATE
+                `,
+                [sellerId]
+            );
+
+            if (payouts.length === 0) {
+                throw new Error("No eligible payouts found for settlement");
+            }
+
+            const now = new Date();
+
+            const eligibleIds = [];
+
+            for (const p of payouts) {
+                if (!p.due_date) continue;
+
+                const due = new Date(p.due_date);
+
+                // enforce escrow rule
+                if (now >= due && p.status === 'processing') {
+                    eligibleIds.push(p.id);
+                }
+            }
+
+            if (eligibleIds.length === 0) {
+                throw new Error("No payouts are eligible for settlement yet (escrow active)");
+            }
+
+            // 3. Update payouts
+            await connection.query(
+                `
+                UPDATE payouts
+                SET status = 'settled',
+                    settled_at = NOW()
+                WHERE id IN (?)
+                `,
+                [eligibleIds]
+            );
+
+            // 4. Update ledger
+            await connection.query(
+                `
+                UPDATE ledger_entries
+                SET status = 'settled'
+                WHERE reference_id IN (?)
+                  AND type = 'seller_payout'
+                `,
+                [eligibleIds]
+            );
+
+            await connection.commit();
+
+            logger.info(
+                `Bulk settlement done for seller ${sellerId} by admin ${adminId}. Count: ${eligibleIds.length}`
+            );
+
+            return {
+                success: true,
+                settled_count: eligibleIds.length
+            };
+
+        } catch (error) {
+            await connection.rollback();
+            logger.error("Bulk settle error:", error);
+            throw error;
+        } finally {
+            connection.release();
         }
     }
 }

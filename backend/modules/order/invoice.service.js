@@ -17,6 +17,7 @@ const { fmt, calculateGST, numberToWords, formatDate: fmtDate } = require('../..
 
 const DEFAULT_LOGO_URL =
   'https://frappay-shop-assets.s3.ap-south-2.amazonaws.com/assets/736dc86d-fb28-41a1-b8b9-85d407252b3a.png';
+const BACKEND_URL = (process.env.BACKEND_URL || 'http://localhost:5000').replace(/\/$/, '');
 
 const DEFAULT_GST_RATE = 5; // 5% GST for books (HSN 4901); stationery may differ
 
@@ -70,7 +71,7 @@ const barcodeText = Buffer.from(rawText).toString('base64');
     includetext: true,
     textxalign: 'center',
   });
-const invoiceDownloadUrl = `http://localhost:5000/api/orders/scan/${Buffer.from(`INV|${order.id}|${invoiceNo}`).toString('base64')}`;
+const invoiceDownloadUrl = `${BACKEND_URL}/api/orders/scan/${Buffer.from(`INV|${order.id}|${invoiceNo}`).toString('base64')}`;
 
 
   const qrBuffer = await QRCode.toBuffer(invoiceDownloadUrl, {

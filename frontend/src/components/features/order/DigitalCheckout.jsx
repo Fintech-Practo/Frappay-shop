@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { Layout } from '@/index.js';
+import { resolvePhotoUrl } from '@/utils/url';
 
 
 export default function DigitalCheckout() {
@@ -363,7 +364,7 @@ export default function DigitalCheckout() {
                       {displayItems.map((item, idx) => {
                         const title = item.product_title || item.title;
                         const imgParams = item.image_url;
-                        const imageUrl = imgParams ? (imgParams.startsWith('http') ? imgParams : `http://localhost:5000/${imgParams.replace(/\\/g, '/')}`) : '/placeholder.svg';
+                        const imageUrl = resolvePhotoUrl(imgParams?.replace(/\\/g, '/')) || '/placeholder.svg';
 
                         return (
                           <div key={item.product_id || idx} className="flex gap-3 group">

@@ -92,18 +92,7 @@ const [usageLoading, setUsageLoading] = useState(false);
   const handleCreate = async (e) => {
   e.preventDefault();
 
-  // ✅ Step 1a: Validate expiry date
-  if (form.expiry_date) {
-    const today = new Date();
-    const expiry = new Date(form.expiry_date);
-    const threeMonthsLater = new Date();
-    threeMonthsLater.setMonth(today.getMonth() + 3);
-
-    if (expiry > threeMonthsLater || expiry < today) {
-      toast.error("Expiry date must be within 3 months from today");
-      return; // stop form submission
-    }
-  }
+  
 
   const payload = {
     ...form,

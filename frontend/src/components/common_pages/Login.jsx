@@ -11,14 +11,14 @@ import { API_BASE_URL } from "@/config/api";
 import axios from 'axios';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import { BRAND_LOGO, BRAND_NAME, BRAND_SHORT_NAME } from '@/config/brand';
-
+import { Checkbox } from '@/components/ui/checkbox';
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [userType, setUserType] = useState('customer');
-
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   axios.defaults.baseURL = API_BASE_URL;
 
   const handleGoogleLogin = useGoogleLogin({
@@ -104,6 +104,13 @@ export default function Login() {
       } else {
         setError(result.message);
       }
+      setLoading(false);
+      return;
+    }
+
+    //  BLOCK SIGNUP WITHOUT CONSENT
+    if (!agreedToTerms) {
+      setError("Please agree to Privacy Policy and Terms of Service");
       setLoading(false);
       return;
     }
@@ -393,6 +400,25 @@ export default function Login() {
                     required
                   />
                 </div>
+
+                <div className="flex items-start space-x-3 mt-4">
+                  <Checkbox
+                    id="terms"
+                    checked={agreedToTerms}
+                    onCheckedChange={(val) => setAgreedToTerms(!!val)}
+                  />
+
+                  <Label htmlFor="terms" className="text-xs leading-relaxed cursor-pointer">
+                    I agree to the{" "}
+                    <Link to="/privacyPolicy" className="text-primary font-semibold hover:underline">
+                      Privacy Policy
+                    </Link>{" "}
+                    &{" "}
+                    <Link to="/termsOfService" className="text-primary font-semibold hover:underline">
+                      Terms of Service
+                    </Link>
+                  </Label>
+                </div>
               </div>
             )}
 
@@ -408,7 +434,12 @@ export default function Login() {
               type="submit"
               size="lg"
               className="h-12 w-full rounded-xl bg-primary font-bold shadow-lg shadow-primary/20 transition-all hover:bg-primary/90"
-              disabled={loading}
+                  disabled={
+                    loading ||
+                    (!isLogin &&
+                      registrationStep === 3 &&
+                      !agreedToTerms)
+                  }
             >
               {loading
                 ? 'Processing...'

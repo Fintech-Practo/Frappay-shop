@@ -56,8 +56,6 @@ export default function CommissionManager() {
 
             const sellerList = await adminService.getSellerCommissionRates();
             setSellers(Array.isArray(sellerList) ? sellerList : []);
-        } catch (err) {
-            toast.error('Failed to load management data');
         } finally {
             setLoading(false);
         }

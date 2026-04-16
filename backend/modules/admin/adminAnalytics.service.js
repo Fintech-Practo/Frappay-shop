@@ -300,7 +300,7 @@ class AdminAnalyticsService {
 
       // 5. Most Active Users (Repeat Shoppers)
       // Rank by order count, then total spent
-      let query = `
+  let query = `
   SELECT u.id, u.name, u.email, u.profile_image_url, 
          COUNT(o.id) as order_count, 
          SUM(o.total_payable_amount) as total_spent

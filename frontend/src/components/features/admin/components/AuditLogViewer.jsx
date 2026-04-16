@@ -12,8 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { adminService } from "@/index";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { formatDate } from '@/lib/utils';
-import { Button } from "@/components/ui/button";
+import { formatDate, formatTime } from '@/lib/utils'; // ⭐ ADDEDimport { Button } from "@/components/ui/button";
 
 export default function AuditLogViewer() {
     const navigate = useNavigate();
@@ -192,8 +191,7 @@ export default function AuditLogViewer() {
                             logs.map((log) => (
                                 <TableRow key={log.id}>
                                     <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                                        {formatDate(log.created_at)} {new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    </TableCell>
+                                         {formatDate(log.created_at)} {formatTime(log.created_at)}                                     </TableCell>
                                     <TableCell>{log.admin_name || `ID: ${log.performed_by || '-'}`}</TableCell>
                                     <TableCell className="font-semibold">{log.module}</TableCell>
                                     <TableCell className="font-medium text-xs">{log.action}</TableCell>

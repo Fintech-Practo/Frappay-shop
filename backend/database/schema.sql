@@ -498,6 +498,9 @@ CREATE TABLE IF NOT EXISTS seller_info (
   user_id INT NOT NULL,
   business_name VARCHAR(255) DEFAULT NULL,
   business_location VARCHAR(255) DEFAULT NULL,
+  city VARCHAR(100) DEFAULT NULL,
+  pin VARCHAR(10) DEFAULT NULL,
+  phone VARCHAR(20) DEFAULT NULL,
   bank_account_number VARCHAR(50) DEFAULT NULL,
   bank_ifsc VARCHAR(20) DEFAULT NULL,
   bank_name VARCHAR(255) DEFAULT NULL,
@@ -516,8 +519,11 @@ CREATE TABLE IF NOT EXISTS seller_info (
   kyc_reviewed_by INT DEFAULT NULL,
   kyc_reviewed_at TIMESTAMP NULL DEFAULT NULL,
   kyc_rejection_reason TEXT DEFAULT NULL,
+   -- Logistics Sync
+  pickup_location_name VARCHAR(255) DEFAULT 'Primary',
+  pickup_pincode VARCHAR(10) DEFAULT NULL,
   -- Onboarding approval
-  approval_status ENUM('PENDING', 'APPROVED', 'REJECTED') DEFAULT 'PENDING',
+  requested_commission_rate DECIMAL(5,2) NOT NULL DEFAULT 10.00,
   approved_by INT DEFAULT NULL,
   approved_at TIMESTAMP NULL DEFAULT NULL,
   rejection_reason TEXT DEFAULT NULL,

@@ -10,6 +10,7 @@ const cartService = require("../cart/cart.service");
 const invoiceService = require("./invoice.service");
 const path = require('path');
 const notificationService = require("../notification/notification.service");
+const smsNotificationService = require("../../services/notificationService");
 const rewardCalculatorService = require("../rewards/rewardCalculator.service");
 const walletRewardService = require("../wallet/walletReward.service");
 const delhiveryService = require("../logistics/delhivery.service");
@@ -504,6 +505,12 @@ async function updateOrderStatus(orderId, status, userRole, userId = null, conne
     }
   }
 
+    try {
+      await smsNotificationService.sendOrderStatusSMS(updatedOrder.user_id, updatedOrder, normalizedStatus);
+    } catch (smsErr) {
+      logger.error("Buyer status SMS failed", { orderId, status: normalizedStatus, error: smsErr.message });
+    }
+    
   if (status === 'DELIVERED') {
     try {
       await walletRewardService.creditOrderRewards(orderId, updatedOrder.user_id);

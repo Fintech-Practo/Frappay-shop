@@ -6,6 +6,7 @@ export const API_BASE_URL = rawBaseURL.endsWith('/') ? rawBaseURL.slice(0, -1) :
 // Create axios instance with base URL
 const api = axios.create({
     baseURL: API_BASE_URL,
+    withCredentials: true,
 });
 
 

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import api from '@/config/api';
 import SellerPayoutHistory from '@/components/features/seller/components/SellerPayoutHistory';
-import { cn, getOrderDisplayStatus, STATUS_CONFIG, formatDate } from '@/lib/utils';
+import { cn, getOrderDisplayStatus, STATUS_CONFIG, formatDate ,formatTime} from '@/lib/utils';
 import {
   Package,
   IndianRupee,
@@ -1123,13 +1123,9 @@ export default function SellerDashboard() {
 
                                     <div className="flex flex-col items-end gap-4 text-xs text-muted-foreground shrink-0">
                                       <span className="flex items-center gap-1.5 opacity-60 bg-secondary/30 px-2 py-1 rounded-lg">
-                                        <Clock className="h-3 w-3" />
-                                        {new Date(notif.created_at).toLocaleTimeString('en-IN', {
-                                          hour: '2-digit',
-                                          minute: '2-digit',
-                                          hour12: true
-                                        })}
-                                      </span>
+                                         <Clock className="h-3 w-3" />
+                                          {formatTime(notif.created_at)} 
+                                        </span>
                                       {!notif.is_read && (
                                         <Button
                                           variant="ghost"

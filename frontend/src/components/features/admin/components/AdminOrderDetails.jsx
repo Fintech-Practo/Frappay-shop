@@ -24,7 +24,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { adminService } from '@/index.js';
-import { formatDate } from '@/lib/utils';
+import { formatDate, formatTime } from '@/lib/utils'; // ⭐ ADDED formatTime
 
 export default function AdminOrderDetails() {
   const { orderId } = useParams();
@@ -250,8 +250,8 @@ export default function AdminOrderDetails() {
 
       {/* Tabs */}
       <Tabs defaultValue="items" className="space-y-4">
-        <div className="w-full overflow-x-auto pb-1">
-          <TabsList className="flex w-max md:w-full md:grid md:grid-cols-7">
+        <div className="w-full overflow-x-auto md:overflow-visible">
+          <TabsList className="flex w-max md:grid md:w-full md:grid-cols-8">
             <TabsTrigger value="items" className="data-[state=active]:text-primary">Items & Sellers</TabsTrigger>
             <TabsTrigger value="buyer" className="data-[state=active]:text-primary">Buyer</TabsTrigger>
             <TabsTrigger value="financials" className="data-[state=active]:text-primary">Financials</TabsTrigger>
@@ -752,7 +752,7 @@ export default function AdminOrderDetails() {
               {/* Vertical Line */}
               <div className="absolute left-6 top-0 bottom-0 w-px bg-border ml-2.5"></div>
 
-              {(orderDetails.status_history || timeline).map((event, idx) => (
+              {(timeline?.length ? timeline : orderDetails.status_history || []).map((event, idx) => (
                 <div key={idx} className="relative flex items-start space-x-4 pb-8 last:pb-0">
                   <div className="z-10 flex items-center justify-center w-6 h-6 rounded-full bg-background border-2 border-primary mt-0.5 ml-2">
                     <div className="w-2 h-2 rounded-full bg-primary"></div>
@@ -763,8 +763,7 @@ export default function AdminOrderDetails() {
                       <Badge variant="outline" className="text-[10px] uppercase">{event.admin_status || event.type}</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {formatDate(event.created_at || event.date)} {new Date(event.created_at || event.date).toLocaleTimeString()}
-                    </p>
+                      {formatDate(event.created_at || event.date)} {formatTime(event.created_at || event.date)}                    </p>
                     {event.remarks && (
                       <p className="mt-2 text-xs p-2 bg-secondary/50 rounded-md italic text-muted-foreground border-l-2 border-primary/30">
                         "{event.remarks}"
@@ -804,7 +803,7 @@ export default function AdminOrderDetails() {
                           </Badge>
                           <p className="text-sm font-semibold text-primary">{log.event_type.replace(/_/g, ' ')}</p>
                         </div>
-                        <p className="text-xs text-muted-foreground">{formatDate(log.created_at)} {new Date(log.created_at).toLocaleTimeString()}</p>
+                        <p className="text-xs text-muted-foreground">{formatDate(log.created_at)} {formatTime(log.created_at)}</p>
                       </div>
                       <p className="text-xs font-mono bg-background p-2 rounded border mb-2 break-all">{log.message}</p>
                       <div className="flex gap-4 text-[10px] text-muted-foreground mt-2 border-t pt-2">
@@ -862,10 +861,7 @@ export default function AdminOrderDetails() {
                     <div className="space-y-1">
                       <p className="text-sm font-medium text-muted-foreground">Transaction Date</p>
                       <p className="text-sm font-medium">
-                        {new Date(payment.created_at).toLocaleString('en-IN', {
-                          dateStyle: 'long',
-                          timeStyle: 'short'
-                        })}
+                        {formatDate(payment.created_at)} {formatTime(payment.created_at)}
                       </p>
                     </div>
 

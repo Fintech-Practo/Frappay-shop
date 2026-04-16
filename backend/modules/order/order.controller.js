@@ -10,7 +10,7 @@ const fs = require("fs");
 const axios = require("axios");
 const jwt = require("jsonwebtoken");
 const env = require("../../config/env");
-const { sendOrderPlacedSMS, sendOrderShippedSMS } = require("../../services/notificationService");
+const { sendOrderPlacedSMS } = require("../../services/notificationService");
 const { auth, allowRole } = require("../../middlewares/auth.middleware"); // add this
 
 
@@ -565,9 +565,6 @@ async function shipOrder(req, res) {
     const { role, userId } = req.user;
 
     const updatedOrder = await orderService.updateOrderStatus(id, 'SHIPPED', role, userId);
-
-    // Fire-and-forget: Send Order Shipped SMS
-    sendOrderShippedSMS(updatedOrder.user_id || userId, id).catch(() => {});
 
     return res.status(200).json({
        success: true,

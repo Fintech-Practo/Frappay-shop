@@ -17,6 +17,7 @@ import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/config/api';
 import { Layout } from '@/index.js';
+import { resolvePhotoUrl } from '@/utils/url';
 
 export default function Cart() {
   const MIN_ORDER_VALUE = 100;
@@ -193,7 +194,7 @@ export default function Cart() {
                     const title = item.book?.title || item.title || "Unknown Title";
                     const author = item.book?.author || item.author;
                     const image = item.book?.image_url || item.images?.[0] || item.image_url;
-                    const imageUrl = image && !image.startsWith('http') ? `http://localhost:5000/${image.replace(/\\/g, '/')}` : (image || '/placeholder.svg');
+                    const imageUrl = resolvePhotoUrl(image?.replace(/\\/g, '/')) || '/placeholder.svg';
                     const price = item.price;
                     const id = item.id;
 

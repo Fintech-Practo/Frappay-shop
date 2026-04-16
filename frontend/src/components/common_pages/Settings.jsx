@@ -17,7 +17,7 @@ import {
   Trash2
 } from 'lucide-react';
 
-export default function Settings() {
+export default function Settings({ insideDashboard = false }) {
   const { user, logout } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -126,19 +126,19 @@ export default function Settings() {
   };
 
   /* ---------------- UI ---------------- */
-
+const Wrapper = ({ children }) =>
+    insideDashboard ? children : <Layout>{children}</Layout>;
   return (
-    <Layout>
-      <div className="container-custom py-8 max-w-4xl space-y-6">
+   
+ <Wrapper>
+       <div className={insideDashboard ? "space-y-6" : "container-custom py-8 max-w-4xl space-y-6"}>
 
         <div>
-          <Button
-            // variant="ghost"
-            //  className="border-primary text-primary hover:bg-primary/10"
-            onClick={() => navigate(-1)}
-          >
+         {!insideDashboard && (
+          <Button onClick={() => navigate(-1)}>
             ← Back
           </Button>
+ )}
 
           <h1 className="text-3xl font-bold">Account Settings</h1>
           <p className="text-muted-foreground">
@@ -319,6 +319,6 @@ export default function Settings() {
         )}
 
       </div>
-    </Layout>
+    </Wrapper>
   );
 }

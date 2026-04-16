@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CreditCard, Calendar, Hash } from 'lucide-react'
+import { formatDate, formatTime } from '@/lib/utils'
 
 export default function PaymentInfoCard({ payment }) {
 
@@ -44,7 +45,9 @@ export default function PaymentInfoCard({ payment }) {
 
                 <div className="flex justify-between text-xs text-muted-foreground">
                     <span>Date</span>
-                    <span>{payment.date ? new Date(payment.date).toLocaleString() : 'N/A'}</span>
+                          <span>
+  {payment.date ? `${formatDate(payment.date)} ${formatTime(payment.date)}` : 'N/A'}
+</span>
                 </div>
             </CardContent>
         </Card>

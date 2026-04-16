@@ -9,7 +9,7 @@ const logger = require("../../utils/logger");
 const db = require("../../config/db"); // Added db
 const { validateRequest, validateQuery } = require("../../middlewares/validation.middleware");
 const { adminActionSchema, getStatsSchema } = require("./admin.schema");
-
+const payoutService = require("../finance/payout.service");
 // Get all users with pagination and filters
 async function listUsers(req, res) {
   try {
@@ -877,6 +877,51 @@ async function exportOrderLedger(req, res) {
     res.status(500).json({ message: 'Export failed' });
   }
 }
+
+async function bulkSettleSellerPayouts(req, res) {
+  try {
+    const { seller_name } = req.body;
+
+    if (!seller_name) {
+      return response.error(res, "seller_name is required", 400);
+    }
+
+    const result = await payoutService.bulkSettleBySeller(
+      seller_name,
+      req.user.userId
+    );
+
+    // Audit log
+    await auditService.logAction({
+      req,
+      action: "BULK_SETTLE_PAYOUTS",
+      module: "PAYOUT",
+      entityType: "SELLER",
+      entityId: seller_name,
+      newValues: {
+        settled_count: result.settled_count
+      }
+    });
+
+    return response.success(
+      res,
+      result,
+      `Bulk settlement completed: ${result.settled_count} payouts settled`
+    );
+
+  } catch (err) {
+    logger.error("Bulk settle failed", {
+      seller: req.body.seller_name,
+      error: err.message
+    });
+
+    return response.error(
+      res,
+      err.message || "Bulk settlement failed",
+      500
+    );
+  }
+}
 module.exports = {
   syncSellerWarehouse,
   listUsers,
@@ -906,7 +951,8 @@ module.exports = {
   actionCommissionRequest,
   getProfileUpdateRequests,
   actionProfileUpdateRequest,
-
+  bulkSettleSellerPayouts,
+  
   // system
   getMaintenanceMode,
   updateMaintenanceMode,

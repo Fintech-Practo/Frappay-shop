@@ -29,7 +29,8 @@ export default function SellerOnboardingDetailsModal({ isOpen, onClose, userId, 
         setLoading(true);
         setError(null);
         try {
-            const data = await adminService.getOnboardingDetails(userId);
+            const response = await adminService.getOnboardingDetails(userId);
+            const data = response?.data || response;
             setDetails(data);
             if (data?.requested_commission_rate != null) {
                 setFinalCommissionRate(data.requested_commission_rate);
@@ -214,7 +215,7 @@ export default function SellerOnboardingDetailsModal({ isOpen, onClose, userId, 
                         <Card className="border-0 shadow-sm">
                             <CardHeader className="bg-muted border-b pb-4">
                                 <CardTitle className="flex items-center gap-2 text-lg">
-                                    <Truck className="h-5 w-5 text-primary"/>
+                                    <Truck className="h-5 w-5 text-primary" />
                                     Warehouse Details
                                 </CardTitle>
                             </CardHeader>
@@ -245,7 +246,7 @@ export default function SellerOnboardingDetailsModal({ isOpen, onClose, userId, 
 
                                     <div>
                                         <label className="text-sm font-medium">Warehouse PIN</label>
-                                        <p className="bg-muted p-3 rounded">{details.warehouse_pin || "—"}</p>
+                                        <p className="bg-muted p-3 rounded">{ details.warehouse_pincode || "—"}</p>
                                     </div>
 
                                 </div>
@@ -257,7 +258,7 @@ export default function SellerOnboardingDetailsModal({ isOpen, onClose, userId, 
                         <Card className="border-0 shadow-sm">
                             <CardHeader className="bg-muted border-b pb-4">
                                 <CardTitle className="flex items-center gap-2 text-lg">
-                                    <MapPin className="h-5 w-5 text-primary"/>
+                                    <MapPin className="h-5 w-5 text-primary" />
                                     Return Address
                                 </CardTitle>
                             </CardHeader>
@@ -283,7 +284,7 @@ export default function SellerOnboardingDetailsModal({ isOpen, onClose, userId, 
 
                                     <div>
                                         <label className="text-sm font-medium">Return PIN</label>
-                                        <p className="bg-muted p-3 rounded">{details.return_pin || "—"}</p>
+                                        <p className="bg-muted p-3 rounded">{details.return_pincode || "—"}</p>
                                     </div>
 
                                 </div>
@@ -348,9 +349,9 @@ export default function SellerOnboardingDetailsModal({ isOpen, onClose, userId, 
                                         <label className="block text-sm font-medium text-foreground mb-1">ID Document Proof</label>
                                         {details.govt_id_url ? (
                                             <div className="flex gap-2 pt-1">
-                                                <Button 
-                                                    variant="outline" 
-                                                    size="sm" 
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
                                                     className="flex items-center gap-2"
                                                     asChild
                                                 >
@@ -358,9 +359,9 @@ export default function SellerOnboardingDetailsModal({ isOpen, onClose, userId, 
                                                         <ExternalLink className="h-4 w-4" /> View Document
                                                     </a>
                                                 </Button>
-                                                <Button 
-                                                    variant="secondary" 
-                                                    size="sm" 
+                                                <Button
+                                                    variant="secondary"
+                                                    size="sm"
                                                     className="flex items-center gap-2"
                                                     asChild
                                                 >
